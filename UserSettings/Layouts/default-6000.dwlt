@@ -774,7 +774,7 @@ MonoBehaviour:
       m_LastClickedID:
         m_Data: 0
       m_ExpandedIDs:
-      - m_Data: -60720
+      - m_Data: -1354
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1600,19 +1600,19 @@ MonoBehaviour:
   m_LastFolders:
   - Assets
   m_LastFoldersGridSize: 46
-  m_LastProjectPath: C:\Users\adaml\Documents\NewDMT\Projekt
+  m_LastProjectPath: C:\Users\adaml\Documents\NewDMT\Projekt\DMT
   m_LockTracker:
     m_IsLocked: 0
   m_LastLocalAssetsSearchArea: 1
   m_FolderTreeState:
     scrollPos: {x: 0, y: 2.5}
     m_SelectedIDs:
-    - m_Data: 67236
+    - m_Data: 49826
     m_LastClickedID:
-      m_Data: 67236
+      m_Data: 49826
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 67236
+    - m_Data: 49826
     - m_Data: 1000000000
     - m_Data: 2147483647
     m_RenameOverlay:
@@ -1645,7 +1645,9 @@ MonoBehaviour:
     m_SelectedIDs: []
     m_LastClickedID:
       m_Data: 0
-    m_ExpandedIDs: []
+    m_ExpandedIDs:
+    - m_Data: 0
+    - m_Data: 49826
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
