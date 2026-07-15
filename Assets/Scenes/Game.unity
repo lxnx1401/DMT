@@ -256,6 +256,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelCompletedLerp
   levelCompletedPanel: {fileID: 296596507}
   animationDuration: 0.6
+  restartButton: {fileID: 1191977911}
+  nextButton: {fileID: 658883400}
 --- !u!1 &106093543
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,7 +880,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 658883401}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 671461672}
+        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
+        m_MethodName: LoadNextLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &658883401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -928,6 +942,7 @@ GameObject:
   - component: {fileID: 671461671}
   - component: {fileID: 671461670}
   - component: {fileID: 671461672}
+  - component: {fileID: 671461673}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -948,7 +963,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   requiredCrowns: 5
-  levelCompletedMenu: {fileID: 51801372}
 --- !u!4 &671461671
 Transform:
   m_ObjectHideFlags: 0
@@ -976,6 +990,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45aca3adfa174004780be47e9f616747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
+--- !u!114 &671461673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671461669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fbfbd750baeba84e9964d2e57649a69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelManager
+  levels:
+  - {fileID: 11400000, guid: b8821a34336de724b8f28a19779b5e45, type: 2}
+  - {fileID: 11400000, guid: 4b4559b8070865749ad5b30883d09138, type: 2}
+  currentLevel: 0
 --- !u!1 &785699905
 GameObject:
   m_ObjectHideFlags: 0

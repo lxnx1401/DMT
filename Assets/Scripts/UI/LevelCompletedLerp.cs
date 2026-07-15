@@ -1,24 +1,28 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem; 
-using UnityEngine.SceneManagement; 
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class LevelCompletedLerp : MonoBehaviour
 {
     [Header("UI Elemente")]
-    [SerializeField] private RectTransform levelCompletedPanel; 
+    [SerializeField] private RectTransform levelCompletedPanel;
 
     [Header("Animationseinstellungen")]
-    [SerializeField] private float animationDuration = 0.4f; 
-    
-    private float screenRightPos; 
-    private float customOpenedPos; 
+    [SerializeField] private float animationDuration = 0.4f;
+
+    private float screenRightPos;
+    private float customOpenedPos;
 
     private bool isLevelCompleted = false;
     private Coroutine activeAnimation;
 
-    public bool IsLevelCompleted => isLevelCompleted; 
+    public bool IsLevelCompleted => isLevelCompleted;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button nextButton;
+
 
     void Awake()
     {
@@ -26,11 +30,33 @@ public class LevelCompletedLerp : MonoBehaviour
         {
             customOpenedPos = levelCompletedPanel.anchoredPosition.x;
             screenRightPos = customOpenedPos + Screen.width + levelCompletedPanel.rect.width;
-            
+
             Vector2 startPos = levelCompletedPanel.anchoredPosition;
             startPos.x = screenRightPos;
             levelCompletedPanel.anchoredPosition = startPos;
         }
+    }
+
+    void Start()
+    {
+        Debug.Log("UI Start");
+
+        Debug.Log(SceneLoader.Instance);
+
+        restartButton.onClick.AddListener(
+            () =>
+            {
+                Debug.Log("Restart gedrückt");
+                SceneLoader.Instance.RestartLevel();
+            }
+        );
+        nextButton.onClick.AddListener(
+            () =>
+            {
+                Debug.Log("Next Level gedrückt");
+                SceneLoader.Instance.LoadNextLevel();
+            }
+        );
     }
 
     void Update()
@@ -48,18 +74,30 @@ public class LevelCompletedLerp : MonoBehaviour
     {
         isLevelCompleted = true;
 
-        if (activeAnimation != null) StopCoroutine(activeAnimation);
-        activeAnimation = StartCoroutine(AnimateMenu(customOpenedPos));
+        if (activeAnimation != null)
+        {
+            StopCoroutine(activeAnimation);
+            activeAnimation = null;
+        }
 
-        Time.timeScale = 0f; 
+        activeAnimation =
+            StartCoroutine(AnimateMenu(customOpenedPos));
+
+        Time.timeScale = 0f;
     }
 
     public void HideLevelCompleted()
     {
         isLevelCompleted = false;
 
-        if (activeAnimation != null) StopCoroutine(activeAnimation);
-        activeAnimation = StartCoroutine(AnimateMenu(screenRightPos));
+        if (activeAnimation != null)
+        {
+            StopCoroutine(activeAnimation);
+            activeAnimation = null;
+        }
+
+        activeAnimation =
+            StartCoroutine(AnimateMenu(screenRightPos));
 
         Time.timeScale = 1f;
     }

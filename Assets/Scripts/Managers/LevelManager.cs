@@ -1,22 +1,48 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    public void RestartLevel()
+    public static LevelManager Instance;
+
+    public LevelData[] levels;
+
+    public int currentLevel = 0;
+
+
+    public LevelData CurrentLevel
     {
-        Time.timeScale = 1f;
+        get
+        {
+            if (levels == null || levels.Length <= currentLevel)
+            {
+                Debug.LogError(
+                    "Kein LevelData für Index " + currentLevel
+                );
 
-        Mouse.current.WarpCursorPosition(
-            new Vector2(
-                Screen.width / 2f,
-                Screen.height / 2f
-            )
-        );
+                return null;
+            }
 
-        SceneManager.LoadScene(
-            SceneManager.GetActiveScene().name
-        );
+            return levels[currentLevel];
+        }
+    }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+
+    public void NextLevel()
+    {
+        currentLevel++;
+        Debug.Log("Neues Level: " + currentLevel);
     }
 }

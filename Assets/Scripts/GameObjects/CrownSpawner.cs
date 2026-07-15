@@ -5,11 +5,12 @@ public class CrownSpawner : MonoBehaviour
 {
     public GameObject crownPrefab;
 
-    public int amount = 5;
+    public int amount;
 
 
     void Start()
     {
+        amount = LevelManager.Instance.CurrentLevel.crownAmount;
         for (int i = 0; i < amount; i++)
         {
             Vector2 position =
