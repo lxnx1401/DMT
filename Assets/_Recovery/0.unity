@@ -363,7 +363,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 1
+  m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -443,19 +443,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ParticleSimulation
   simulationShader: {fileID: 7200000, guid: dab8dc818e8a918499c2bd232a06ee82, type: 3}
   particleCount: 1000
-  trailHistoryLength: 48
-  trailDuration: 0.35
-  tangentialStiffness: 400
-  lateralStiffness: 400
-  trailWidth: 0.4
-  idleWidth: 1.8
-  tailTaper: 0.05
-  wanderStrength: 0.12
-  stretchResponse: 0.7
-  substeps: 2
-  maxSpeed: 100
-  mouseVelSmoothing: 0.15
-  dampingRatio: 0.7
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

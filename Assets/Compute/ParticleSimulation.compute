@@ -1,0 +1,128 @@
+#pragma kernel CSMain
+
+struct Particle
+{
+    float2 position;
+    float2 velocity;
+    float2 offset;
+    float damping;
+    float forceScale;
+};
+
+RWStructuredBuffer<Particle> particles;
+StructuredBuffer<float2> mouseHistory;
+StructuredBuffer<float> mouseSpeedHistory;
+
+uint particleCount;
+uint historyCount;
+
+float time;
+float deltaTime;
+float mouseSpeed; // geglättet aus C#
+
+float tangentialStiffness;
+float lateralStiffness;
+float trailWidth;
+float idleWidth;
+float tailTaper;
+float wanderStrength;
+float stretchResponse;
+float maxSpeed;
+uint substeps;
+
+
+float hash11(float p)
+{
+    p = frac(p * 0.1031);
+    p *= p + 33.33;
+    p *= p + p;
+    return frac(p);
+}
+
+float sampleSpeedHistory(float t)            // NEU, analog zu sampleHistory
+{
+    float f = t * (float)(historyCount - 1);
+    uint i0 = (uint)floor(f);
+    uint i1 = min(i0 + 1u, historyCount - 1u);
+    float frac_ = f - (float)i0;
+    return lerp(mouseSpeedHistory[i0], mouseSpeedHistory[i1], frac_);
+}
+
+float2 sampleHistory(float t)
+{
+    float f = t * (float)(historyCount - 1);
+    uint i0 = (uint)floor(f);
+    uint i1 = min(i0 + 1u, historyCount - 1u);
+    float frac_ = f - (float)i0;
+    return lerp(mouseHistory[i0], mouseHistory[i1], frac_);
+}
+
+[numthreads(256,1,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    uint index = id.x;
+    if (index >= particleCount) return;
+
+    Particle p = particles[index];
+
+    float seedA = hash11(index * 12.9898);
+    float seedB = hash11(index * 78.233 + 1.0);
+    float seedC = hash11(index * 45.164 + 2.0);
+    float lateralSeed = seedC * 2.0 - 1.0; // -1..1, ersetzt isotropes offset im Bewegungsfall
+
+    float trailT = pow(seedA, 1.6);
+    float2 pathPoint = sampleHistory(trailT);
+    float localSpeed = sampleSpeedHistory(trailT);
+
+    // Pfadrichtung aus der Historie (Kopf -> Ende der Spur)
+    float2 pathVec = mouseHistory[0] - mouseHistory[historyCount - 1];
+    float pathLen = length(pathVec);
+    float2 pathDir = pathLen > 0.001 ? pathVec / pathLen : float2(1.0, 0.0);
+    float2 perp = float2(-pathDir.y, pathDir.x);
+
+    // Individuelles Wandern, immer aktiv
+    float freqX = lerp(0.2, 0.5, seedA);
+    float freqY = lerp(0.2, 0.5, seedB);
+    float2 wander = float2(
+        sin(time * freqX + seedA * 6.2831),
+        sin(time * freqY + seedB * 6.2831)
+    ) * wanderStrength;
+
+    float stretch = saturate(localSpeed * stretchResponse);
+    stretch = stretch * stretch * (3.0 - 2.0 * stretch);
+
+    // Stillstand: runder Blob (isotroper Offset, wie bisher)
+    float2 isoOffset = p.offset * idleWidth;
+
+    // Bewegung: schmale Linie senkrecht zur Bahn, hinten dünner (Meteor-Look)
+    float taper = lerp(1.0, tailTaper, trailT);
+    float2 dirOffset = perp * lateralSeed * trailWidth * taper;
+
+    float2 lateral = lerp(isoOffset, dirOffset, stretch);
+    float2 target = pathPoint + lateral + wander;
+
+    // Substeps für stabile Feder-Integration, unabhängig von Steifigkeit/Framerate
+    float subDt = deltaTime / (float)substeps;
+    for (uint s = 0; s < substeps; s++)
+    {
+        float2 diff = target - p.position;
+
+        // Entlang der Bahn vs. quer zur Bahn getrennt federn
+        float along = dot(diff, pathDir);
+        float across = dot(diff, perp);
+
+        float2 force = (pathDir * along * tangentialStiffness
+                       + perp * across * lateralStiffness) * p.forceScale;
+
+        p.velocity += force * subDt;
+        p.velocity *= pow(p.damping, subDt * 60.0);
+
+        float speed = length(p.velocity);
+        if (speed > maxSpeed)
+            p.velocity = p.velocity / speed * maxSpeed;
+
+        p.position += p.velocity * subDt;
+    }
+
+    particles[index] = p;
+}
