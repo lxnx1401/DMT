@@ -51,9 +51,13 @@ public class ParticleSimulation : MonoBehaviour
 
     private float[] mouseSpeedHistory;
     private ComputeBuffer mouseSpeedHistoryBuffer;
+    public Vector2 HeadPosition { get; private set; }
+    public Vector2 PlayerPosition { get; private set; }
 
     void Start()
     {
+        ResetMouse();
+        PlayerPosition = GetMouseWorld();
         particleBuffer = new ComputeBuffer(particleCount, Marshal.SizeOf<Particle>());
         particles = new Particle[particleCount];
 
@@ -93,7 +97,7 @@ public class ParticleSimulation : MonoBehaviour
 
         // NEU: fehlte komplett
         particleMaterial = new Material(Shader.Find("Custom/ParticleShader"));
-        particleMaterial.SetFloat("_ParticleRadius", 8.0f);
+        particleMaterial.SetFloat("_ParticleRadius", 0.1f);
     }
 
     Vector2 GetMouseWorld()
@@ -107,6 +111,13 @@ public class ParticleSimulation : MonoBehaviour
         float dt = Mathf.Min(Time.deltaTime, 1f / 30f);
 
         Vector2 mouseWorld = GetMouseWorld();
+        PlayerPosition = Vector2.Lerp(
+            PlayerPosition,
+            mouseWorld,
+            3f * Time.deltaTime
+        );
+        HeadPosition = PlayerPosition;
+        transform.position = PlayerPosition;
 
         Vector2 rawMouseVelocity = Vector2.zero;
         if (hasLastMouse && dt > 0.0001f)
@@ -153,6 +164,12 @@ public class ParticleSimulation : MonoBehaviour
             MeshTopology.Triangles,
             particleCount * 6
         );
+    }
+
+    public void ResetMouse()
+    {
+        hasLastMouse = false;
+        smoothedMouseVelocity = Vector2.zero;
     }
 
     private void OnDestroy()
