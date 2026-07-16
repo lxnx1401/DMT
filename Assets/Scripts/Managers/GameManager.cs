@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     private int collectedCrowns = 0;
     private LevelCompletedLerp levelCompletedMenu;
 
-
     void Awake()
     {
         if (Instance != null && Instance != this)
