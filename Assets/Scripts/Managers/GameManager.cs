@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     void Win()
     {
         levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();

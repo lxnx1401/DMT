@@ -28,6 +28,7 @@ Shader "Custom/ParticleShader"
 
             StructuredBuffer<Particle> particles;
             float _ParticleRadius;
+            float4 _TintColor;
 
             struct Varyings
             {
@@ -70,7 +71,7 @@ Shader "Custom/ParticleShader"
 
                 if (alpha <= 0.0) discard;
 
-                return float4(1, 1, 1, alpha * 0.75);
+                return float4(_TintColor.rgb, alpha * _TintColor.a);
             }
 
             ENDHLSL

@@ -3,12 +3,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 
 public class LevelCompletedLerp : MonoBehaviour
 {
     [Header("UI Elemente")]
     [SerializeField] private RectTransform levelCompletedPanel;
+
+    [SerializeField] private TMP_Text text;
 
     [Header("Animationseinstellungen")]
     [SerializeField] private float animationDuration = 0.4f;
@@ -73,6 +76,7 @@ public class LevelCompletedLerp : MonoBehaviour
     public void TriggerLevelCompleted()
     {
         isLevelCompleted = true;
+        text.text = ParticleSimulation.Instance.ActiveParticles.ToString("000");
 
         if (activeAnimation != null)
         {
