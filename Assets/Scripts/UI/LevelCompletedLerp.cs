@@ -18,6 +18,7 @@ public class LevelCompletedLerp : MonoBehaviour
     private TMP_Text lostTitleText;
     private GameObject completedTitle;
     private GameObject backToMenuButton;
+    private GameObject scoreLabel;
 
     [Header("Animationseinstellungen")]
     [SerializeField] private float animationDuration = 0.4f;
@@ -91,9 +92,15 @@ public class LevelCompletedLerp : MonoBehaviour
             : 0;
 
         if (scoreText != null)
+        {
+            scoreText.gameObject.SetActive(!hasLost);
             scoreText.text = activeParticles.ToString("000");
+        }
         else
             Debug.LogWarning("Level completed score text is not assigned.", this);
+
+        if (scoreLabel != null)
+            scoreLabel.SetActive(!hasLost);
 
         if (completedTitle != null)
             completedTitle.SetActive(!hasLost);
@@ -111,7 +118,7 @@ public class LevelCompletedLerp : MonoBehaviour
         }
 
         if (backToMenuButton != null)
-            backToMenuButton.SetActive(!hasLost);
+            backToMenuButton.SetActive(true);
 
         if (levelCompletedPanel == null)
         {
@@ -203,6 +210,12 @@ public class LevelCompletedLerp : MonoBehaviour
         {
             Transform backButton = levelCompletedPanel.Find("Back to menu");
             backToMenuButton = backButton != null ? backButton.gameObject : null;
+        }
+
+        if (scoreLabel == null)
+        {
+            Transform label = levelCompletedPanel.Find("ScoreTEXT");
+            scoreLabel = label != null ? label.gameObject : null;
         }
 
         if (lostTitleText == null)
