@@ -29,11 +29,13 @@ public class ObstacleSpawner : MonoBehaviour
             ? Mathf.Max(1, Mathf.RoundToInt(level.obstacleAmount * multiplier))
             : 0;
 
+        ResolveBoundary();
+        UpdateWorldBoundary(level.PlayAreaBounds);
+
         if (Amount == 0)
             return;
 
-        ResolveBoundary();
-        Bounds spawnBounds = GetSpawnBounds();
+        Bounds spawnBounds = GetSpawnBounds(level.PlayAreaBounds);
         SpawnDistributedObstacles(spawnBounds);
     }
 
@@ -111,30 +113,10 @@ public class ObstacleSpawner : MonoBehaviour
             worldBoundary = boundaryObject.GetComponent<LineRenderer>();
     }
 
-    private Bounds GetSpawnBounds()
+    private Bounds GetSpawnBounds(Bounds playAreaBounds)
     {
-        Vector2 minimum = new Vector2(-20f, -20f);
-        Vector2 maximum = new Vector2(20f, 20f);
-
-        if (worldBoundary != null && worldBoundary.positionCount > 0)
-        {
-            Vector3 first = worldBoundary.GetPosition(0);
-            if (!worldBoundary.useWorldSpace)
-                first = worldBoundary.transform.TransformPoint(first);
-
-            minimum = first;
-            maximum = first;
-
-            for (int i = 1; i < worldBoundary.positionCount; i++)
-            {
-                Vector3 point = worldBoundary.GetPosition(i);
-                if (!worldBoundary.useWorldSpace)
-                    point = worldBoundary.transform.TransformPoint(point);
-
-                minimum = Vector2.Min(minimum, point);
-                maximum = Vector2.Max(maximum, point);
-            }
-        }
+        Vector2 minimum = playAreaBounds.min;
+        Vector2 maximum = playAreaBounds.max;
 
         Obstacle prefabObstacle = obstaclePrefab.GetComponent<Obstacle>();
         float obstacleRadius = prefabObstacle != null ? prefabObstacle.Radius : 2f;
@@ -150,5 +132,28 @@ public class ObstacleSpawner : MonoBehaviour
 
         Vector2 size = maximum - minimum;
         return new Bounds((minimum + maximum) * 0.5f, new Vector3(size.x, size.y, 0f));
+    }
+
+    private void UpdateWorldBoundary(Bounds playAreaBounds)
+    {
+        if (worldBoundary == null)
+        {
+            Debug.LogWarning("No WorldBoundary LineRenderer found.", this);
+            return;
+        }
+
+        Vector3 minimum = playAreaBounds.min;
+        Vector3 maximum = playAreaBounds.max;
+        worldBoundary.useWorldSpace = true;
+        worldBoundary.loop = false;
+        worldBoundary.positionCount = 5;
+        worldBoundary.SetPositions(new[]
+        {
+            new Vector3(minimum.x, minimum.y, 0f),
+            new Vector3(maximum.x, minimum.y, 0f),
+            new Vector3(maximum.x, maximum.y, 0f),
+            new Vector3(minimum.x, maximum.y, 0f),
+            new Vector3(minimum.x, minimum.y, 0f)
+        });
     }
 }

@@ -6,7 +6,6 @@ using UnityEngine;
 public class CrownSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject crownPrefab;
-    [SerializeField] private LineRenderer worldBoundary;
     [SerializeField, Min(0f)] private float additionalBoundaryPadding = 0.75f;
     [SerializeField, Min(0.1f)] private float minimumCrownSpacing = 3f;
     [SerializeField, Min(0f)] private float minimumObstacleClearance = 0.5f;
@@ -31,13 +30,12 @@ public class CrownSpawner : MonoBehaviour
         if (Amount == 0)
             yield break;
 
-        ResolveBoundary();
         Obstacle[] obstacles = FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
         float desiredObstacleClearance = DifficultyManager.Instance != null
             ? DifficultyManager.Instance.CurrentTuning.coinObstacleClearance
             : 3f;
         float crownRadius = GetCrownRadius();
-        Bounds bounds = GetSpawnBounds(crownRadius);
+        Bounds bounds = GetSpawnBounds(level.PlayAreaBounds, crownRadius);
 
         SpawnCrowns(bounds, obstacles, crownRadius, desiredObstacleClearance);
     }
@@ -166,34 +164,10 @@ public class CrownSpawner : MonoBehaviour
         return collider.radius * scale;
     }
 
-    private void ResolveBoundary()
+    private Bounds GetSpawnBounds(Bounds playAreaBounds, float crownRadius)
     {
-        if (worldBoundary != null)
-            return;
-
-        GameObject boundaryObject = GameObject.Find("WorldBoundary");
-        if (boundaryObject != null)
-            worldBoundary = boundaryObject.GetComponent<LineRenderer>();
-    }
-
-    private Bounds GetSpawnBounds(float crownRadius)
-    {
-        Vector2 minimum = new Vector2(-20f, -20f);
-        Vector2 maximum = new Vector2(20f, 20f);
-
-        if (worldBoundary != null && worldBoundary.positionCount > 0)
-        {
-            Vector3 first = GetWorldBoundaryPoint(0);
-            minimum = first;
-            maximum = first;
-
-            for (int i = 1; i < worldBoundary.positionCount; i++)
-            {
-                Vector3 point = GetWorldBoundaryPoint(i);
-                minimum = Vector2.Min(minimum, point);
-                maximum = Vector2.Max(maximum, point);
-            }
-        }
+        Vector2 minimum = playAreaBounds.min;
+        Vector2 maximum = playAreaBounds.max;
 
         float padding = crownRadius + additionalBoundaryPadding;
         minimum += Vector2.one * padding;
@@ -207,13 +181,5 @@ public class CrownSpawner : MonoBehaviour
 
         Vector2 size = maximum - minimum;
         return new Bounds((minimum + maximum) * 0.5f, new Vector3(size.x, size.y, 0f));
-    }
-
-    private Vector3 GetWorldBoundaryPoint(int index)
-    {
-        Vector3 point = worldBoundary.GetPosition(index);
-        return worldBoundary.useWorldSpace
-            ? point
-            : worldBoundary.transform.TransformPoint(point);
     }
 }
