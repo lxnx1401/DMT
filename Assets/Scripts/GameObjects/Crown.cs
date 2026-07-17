@@ -19,6 +19,13 @@ public class Crown : MonoBehaviour
 
             collected = true;
 
+            // Destroy is deferred until the end of the frame. Hide collision and
+            // visuals immediately so the final crown cannot remain on the win screen.
+            foreach (Collider2D crownCollider in GetComponentsInChildren<Collider2D>(true))
+                crownCollider.enabled = false;
+            foreach (Renderer crownRenderer in GetComponentsInChildren<Renderer>(true))
+                crownRenderer.enabled = false;
+
             if (crownCollectSound != null)
                 AudioSource.PlayClipAtPoint(crownCollectSound, transform.position);
 
@@ -27,9 +34,10 @@ public class Crown : MonoBehaviour
                 : 0;
             PerformanceAnalyzer.Instance?.CompleteSection(particleCount);
 
-            GameManager.Instance.CollectCrown();
+            GameManager.Instance?.CollectCrown();
 
-            PerformanceAnalyzer.Instance?.BeginSection(particleCount);
+            if (!(GameManager.Instance?.IsGameOver ?? false))
+                PerformanceAnalyzer.Instance?.BeginSection(particleCount);
 
             Destroy(gameObject);
         }
