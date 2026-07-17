@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Serialization;
 
 
 public class LevelCompletedLerp : MonoBehaviour
@@ -11,7 +12,8 @@ public class LevelCompletedLerp : MonoBehaviour
     [Header("UI Elemente")]
     [SerializeField] private RectTransform levelCompletedPanel;
 
-    [SerializeField] private TMP_Text text;
+    [FormerlySerializedAs("text")]
+    [SerializeField] private TMP_Text scoreText;
 
     [Header("Animationseinstellungen")]
     [SerializeField] private float animationDuration = 0.4f;
@@ -29,6 +31,8 @@ public class LevelCompletedLerp : MonoBehaviour
 
     void Awake()
     {
+        ResolveReferences();
+
         if (levelCompletedPanel != null)
         {
             customOpenedPos = levelCompletedPanel.anchoredPosition.x;
@@ -42,24 +46,11 @@ public class LevelCompletedLerp : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("UI Start");
+        if (restartButton != null)
+            restartButton.onClick.AddListener(RestartLevel);
 
-        Debug.Log(SceneLoader.Instance);
-
-        restartButton.onClick.AddListener(
-            () =>
-            {
-                Debug.Log("Restart gedrückt");
-                SceneLoader.Instance.RestartLevel();
-            }
-        );
-        nextButton.onClick.AddListener(
-            () =>
-            {
-                Debug.Log("Next Level gedrückt");
-                SceneLoader.Instance.LoadNextLevel();
-            }
-        );
+        if (nextButton != null)
+            nextButton.onClick.AddListener(LoadNextLevel);
     }
 
     void Update()
@@ -76,7 +67,27 @@ public class LevelCompletedLerp : MonoBehaviour
     public void TriggerLevelCompleted()
     {
         isLevelCompleted = true;
-        text.text = ParticleSimulation.Instance.ActiveParticles.ToString("000");
+        ResolveReferences();
+
+        int activeParticles = ParticleSimulation.Instance != null
+            ? ParticleSimulation.Instance.ActiveParticles
+            : 0;
+
+        if (scoreText != null)
+            scoreText.text = activeParticles.ToString("000");
+        else
+            Debug.LogWarning("Level completed score text is not assigned.", this);
+
+        if (nextButton != null)
+            nextButton.interactable = LevelManager.Instance != null &&
+                LevelManager.Instance.HasNextLevel;
+
+        if (levelCompletedPanel == null)
+        {
+            Debug.LogError("Level completed panel is not assigned.", this);
+            Time.timeScale = 0f;
+            return;
+        }
 
         if (activeAnimation != null)
         {
@@ -129,5 +140,23 @@ public class LevelCompletedLerp : MonoBehaviour
         }
 
         levelCompletedPanel.anchoredPosition = targetPosition;
+    }
+
+    private void RestartLevel()
+    {
+        if (SceneLoader.Instance != null)
+            SceneLoader.Instance.RestartLevel();
+    }
+
+    private void LoadNextLevel()
+    {
+        if (SceneLoader.Instance != null)
+            SceneLoader.Instance.LoadNextLevel();
+    }
+
+    private void ResolveReferences()
+    {
+        if (scoreText == null && levelCompletedPanel != null)
+            scoreText = levelCompletedPanel.GetComponentInChildren<TMP_Text>(true);
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    public static LevelManager Instance;
+    public static LevelManager Instance { get; private set; }
 
     public LevelData[] levels;
 
@@ -13,7 +13,7 @@ public class LevelManager : MonoBehaviour
     {
         get
         {
-            if (levels == null || levels.Length <= currentLevel)
+            if (levels == null || currentLevel < 0 || levels.Length <= currentLevel)
             {
                 Debug.LogError(
                     "Kein LevelData für Index " + currentLevel
@@ -35,14 +35,25 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this);
         }
     }
 
-
-    public void NextLevel()
+    private void OnDestroy()
     {
+        if (Instance == this)
+            Instance = null;
+    }
+
+    public bool HasNextLevel => levels != null && currentLevel + 1 < levels.Length;
+
+    public bool TryNextLevel()
+    {
+        if (!HasNextLevel)
+            return false;
+
         currentLevel++;
         Debug.Log("Neues Level: " + currentLevel);
+        return true;
     }
 }

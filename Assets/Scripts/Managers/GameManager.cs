@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameManager Instance { get; private set; }
 
 
     public int requiredCrowns;
@@ -14,16 +14,23 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
 
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     public void LevelRestart()
     {
-        requiredCrowns = LevelManager.Instance.CurrentLevel.crownAmount;
+        if (LevelManager.Instance?.CurrentLevel != null)
+            requiredCrowns = LevelManager.Instance.CurrentLevel.crownAmount;
         collectedCrowns = 0;
     }
 
@@ -54,6 +61,10 @@ public class GameManager : MonoBehaviour
     {
         levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();
         Debug.Log("GEWONNEN!");
-        levelCompletedMenu.TriggerLevelCompleted();
+
+        if (levelCompletedMenu != null)
+            levelCompletedMenu.TriggerLevelCompleted();
+        else
+            Debug.LogError("Kein LevelCompletedLerp in der aktiven Szene gefunden.", this);
     }
 }

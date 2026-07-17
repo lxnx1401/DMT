@@ -4,24 +4,32 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    public static SceneLoader Instance;
+    public static SceneLoader Instance { get; private set; }
 
-    void Awake()
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
         Instance = this;
     }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     public void RestartLevel()
     {
         Debug.Log("Restart requested");
-        GameManager.Instance.LevelRestart();
+        GameManager.Instance?.LevelRestart();
         Time.timeScale = 1f;
 
-        Mouse.current.WarpCursorPosition(
-            new Vector2(
-                Screen.width / 2f,
-                Screen.height / 2f
-            )
-        );
+        CenterMouseCursor();
 
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
@@ -30,23 +38,25 @@ public class SceneLoader : MonoBehaviour
 
     public void LoadNextLevel()
     {
+        if (LevelManager.Instance == null || !LevelManager.Instance.TryNextLevel())
+        {
+            Debug.LogWarning("Kein weiteres Level verfügbar.", this);
+            return;
+        }
+
         Time.timeScale = 1f;
-
-
-        LevelManager.Instance.NextLevel();
-        GameManager.Instance.LevelRestart();
-
-
-        Mouse.current.WarpCursorPosition(
-            new Vector2(
-                Screen.width / 2f,
-                Screen.height / 2f
-            )
-        );
-
+        GameManager.Instance?.LevelRestart();
+        CenterMouseCursor();
 
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );
+    }
+
+    private static void CenterMouseCursor()
+    {
+        if (Mouse.current != null)
+            Mouse.current.WarpCursorPosition(
+                new Vector2(Screen.width / 2f, Screen.height / 2f));
     }
 }
