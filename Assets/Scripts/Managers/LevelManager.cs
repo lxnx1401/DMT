@@ -56,4 +56,9 @@ public class LevelManager : MonoBehaviour
         Debug.Log("Neues Level: " + currentLevel);
         return true;
     }
+
+    public void ResetToFirstLevel()
+    {
+        currentLevel = 0;
+    }
 }

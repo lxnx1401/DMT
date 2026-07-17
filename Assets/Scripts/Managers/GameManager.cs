@@ -37,6 +37,15 @@ public class GameManager : MonoBehaviour
         IsGameOver = false;
     }
 
+    public void StartNewGame()
+    {
+        collectedCrowns = 0;
+        IsGameOver = false;
+
+        if (LevelManager.Instance?.CurrentLevel != null)
+            requiredCrowns = LevelManager.Instance.CurrentLevel.crownAmount;
+    }
+
 
     public void CollectCrown()
     {
