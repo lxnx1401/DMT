@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Crown : MonoBehaviour
 {
-    private bool collected = false;
+    private bool collected;
     [SerializeField] private AudioClip crownCollectSound;
 
 
@@ -19,12 +19,17 @@ public class Crown : MonoBehaviour
 
             collected = true;
 
-            AudioSource.PlayClipAtPoint(
-                crownCollectSound,
-                transform.position
-            );
+            if (crownCollectSound != null)
+                AudioSource.PlayClipAtPoint(crownCollectSound, transform.position);
+
+            int particleCount = ParticleSimulation.Instance != null
+                ? ParticleSimulation.Instance.ActiveParticles
+                : 0;
+            PerformanceAnalyzer.Instance?.CompleteSection(particleCount);
 
             GameManager.Instance.CollectCrown();
+
+            PerformanceAnalyzer.Instance?.BeginSection(particleCount);
 
             Destroy(gameObject);
         }

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(-200)]
 public class ObstacleSpawner : MonoBehaviour
 {
     public GameObject obstaclePrefab;
@@ -9,7 +10,13 @@ public class ObstacleSpawner : MonoBehaviour
 
     void Start()
     {
-        amount = LevelManager.Instance.CurrentLevel.obstacleAmount;
+        int baseAmount = LevelManager.Instance.CurrentLevel.obstacleAmount;
+        float multiplier = DifficultyManager.Instance != null
+            ? DifficultyManager.Instance.CurrentTuning.obstacleSpawnMultiplier
+            : 1f;
+        amount = baseAmount > 0
+            ? Mathf.Max(1, Mathf.RoundToInt(baseAmount * multiplier))
+            : 0;
         for (int i = 0; i < amount; i++)
         {
             Vector2 position =

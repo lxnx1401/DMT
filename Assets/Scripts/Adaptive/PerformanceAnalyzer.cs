@@ -1,97 +1,74 @@
-using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(-900)]
 public class PerformanceAnalyzer : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private DifficultyManager difficultyManager;
+    [SerializeField, Min(0.1f)] private float targetTimePerCoin = 8f;
 
-    [Header("Defaults")]
-    [SerializeField, Min(0.1f)] private float defaultTargetTime = 20f;
-    [SerializeField, Min(0)] private int defaultParticleCount = 1000;
+    public static PerformanceAnalyzer Instance { get; private set; }
+    public bool IsSectionActive { get; private set; }
 
-    private readonly Dictionary<string, int> obstacleHits = new Dictionary<string, int>();
-    private int activeCheckpointIndex;
+    private int sectionIndex;
     private int particlesAtStart;
     private int reportedParticleLoss;
+    private int obstacleHits;
     private float sectionStartTime;
-    private float spreadTotal;
-    private int spreadSampleCount;
-    private float recoveryTime;
-
-    public bool IsSectionActive { get; private set; }
-    public SectionPerformanceData LastCompletedSection { get; private set; }
 
     private void Awake()
     {
-        if (difficultyManager == null)
-            difficultyManager = FindFirstObjectByType<DifficultyManager>();
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
     }
 
-    public void BeginSection(int checkpointIndex, int currentParticleCount)
+    private void OnDestroy()
     {
-        activeCheckpointIndex = checkpointIndex;
-        particlesAtStart = NormalizeParticleCount(currentParticleCount);
+        if (Instance == this)
+            Instance = null;
+    }
+
+    public void BeginSection(int currentParticleCount)
+    {
+        particlesAtStart = Mathf.Max(0, currentParticleCount);
         reportedParticleLoss = 0;
+        obstacleHits = 0;
         sectionStartTime = Time.time;
-        spreadTotal = 0f;
-        spreadSampleCount = 0;
-        recoveryTime = 0f;
-        obstacleHits.Clear();
         IsSectionActive = true;
     }
 
-    public SectionPerformanceData CompleteSection(int checkpointIndex, int currentParticleCount)
+    public void CompleteSection(int currentParticleCount)
     {
         if (!IsSectionActive)
         {
-            BeginSection(checkpointIndex, currentParticleCount);
-            return null;
+            BeginSection(currentParticleCount);
+            return;
         }
 
-        int particlesAtEnd = NormalizeParticleCount(currentParticleCount);
+        int particlesAtEnd = Mathf.Max(0, currentParticleCount);
         int measuredLoss = Mathf.Max(0, particlesAtStart - particlesAtEnd);
-        int particlesLost = Mathf.Max(measuredLoss, reportedParticleLoss);
-        int totalHits = 0;
-
-        foreach (int hitCount in obstacleHits.Values)
-            totalHits += hitCount;
-
         SectionPerformanceData data = new SectionPerformanceData
         {
-            checkpointIndex = checkpointIndex,
+            sectionIndex = sectionIndex++,
             sectionTime = Mathf.Max(0f, Time.time - sectionStartTime),
-            targetTime = defaultTargetTime,
+            targetTime = targetTimePerCoin,
             particlesAtStart = particlesAtStart,
             particlesAtEnd = particlesAtEnd,
-            particlesLost = particlesLost,
-            particleLossRate = particlesAtStart > 0
-                ? Mathf.Clamp01((float)particlesLost / particlesAtStart)
-                : 0f,
-            totalObstacleHits = totalHits,
-            averageSwarmSpread = spreadSampleCount > 0 ? spreadTotal / spreadSampleCount : 0f,
-            recoveryTime = recoveryTime
+            particlesLost = Mathf.Max(measuredLoss, reportedParticleLoss),
+            obstacleHits = obstacleHits
         };
 
-        data.SetObstacleHits(obstacleHits);
-        LastCompletedSection = data;
         IsSectionActive = false;
-
-        if (difficultyManager == null)
-            difficultyManager = FindFirstObjectByType<DifficultyManager>();
-
-        difficultyManager?.EvaluateSection(data);
-        return data;
+        DifficultyManager.Instance?.EvaluateSection(data);
     }
 
-    public void RegisterObstacleHit(string obstacleType)
+    public void RegisterObstacleHit()
     {
-        if (!IsSectionActive)
-            return;
-
-        string typeName = string.IsNullOrWhiteSpace(obstacleType) ? "Unknown" : obstacleType;
-        obstacleHits.TryGetValue(typeName, out int hitCount);
-        obstacleHits[typeName] = hitCount + 1;
+        if (IsSectionActive)
+            obstacleHits++;
     }
 
     public void RegisterParticleLoss(int amount)
@@ -100,23 +77,9 @@ public class PerformanceAnalyzer : MonoBehaviour
             reportedParticleLoss += Mathf.Max(0, amount);
     }
 
-    public void ReportSwarmSpread(float spread)
+    public void ResetRun(int currentParticleCount)
     {
-        if (!IsSectionActive || spread < 0f)
-            return;
-
-        spreadTotal += spread;
-        spreadSampleCount++;
-    }
-
-    public void ReportRecoveryTime(float reportedRecoveryTime)
-    {
-        if (IsSectionActive)
-            recoveryTime = Mathf.Max(recoveryTime, Mathf.Max(0f, reportedRecoveryTime));
-    }
-
-    private int NormalizeParticleCount(int particleCount)
-    {
-        return particleCount >= 0 ? particleCount : defaultParticleCount;
+        sectionIndex = 0;
+        BeginSection(currentParticleCount);
     }
 }

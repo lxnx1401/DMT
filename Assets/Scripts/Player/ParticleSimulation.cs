@@ -42,6 +42,7 @@ public class ParticleSimulation : MonoBehaviour
     [SerializeField] private float stretchResponse = 0.08f;
     [SerializeField] private float minSpeed = 0.15f;
     [SerializeField] private float maxSpeed2 = 1.2f;
+    [SerializeField, Min(0.1f)] private float basePlayerSpeed = 18f;
     private ComputeBuffer particleBuffer;
     private ComputeBuffer mouseHistoryBuffer;
     private ComputeBuffer obstacleBuffer;
@@ -63,6 +64,8 @@ public class ParticleSimulation : MonoBehaviour
 
 
     private Vector2 smoothedMouseVelocity;
+    private float baseTangentialStiffness;
+    private float baseLateralStiffness;
 
     private float[] mouseSpeedHistory;
     private ComputeBuffer mouseSpeedHistoryBuffer;
@@ -79,6 +82,8 @@ public class ParticleSimulation : MonoBehaviour
 
     void Start()
     {
+        baseTangentialStiffness = tangentialStiffness;
+        baseLateralStiffness = lateralStiffness;
         ActiveParticles = particleCapacity;
         rb = GetComponent<Rigidbody2D>();
         ResetMouse();
@@ -127,6 +132,8 @@ public class ParticleSimulation : MonoBehaviour
         particleMaterial = new Material(Shader.Find("Custom/ParticleShader"));
         particleMaterial.SetFloat("_ParticleRadius", 0.1f);
         particleMaterial.SetColor("_TintColor", Color.white);
+
+        PerformanceAnalyzer.Instance?.ResetRun(ActiveParticles);
     }
 
     Vector2 GetMouseWorld()
@@ -144,11 +151,14 @@ public class ParticleSimulation : MonoBehaviour
         Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
 
         // NEU: PlayerPosition wieder aktualisieren
-        PlayerPosition = Vector2.Lerp(
+        DifficultyTuning tuning = DifficultyManager.Instance != null
+            ? DifficultyManager.Instance.CurrentTuning
+            : null;
+        float speedMultiplier = tuning != null ? tuning.playerSpeedMultiplier : 1f;
+        PlayerPosition = Vector2.MoveTowards(
             PlayerPosition,
             mouseWorld,
-            3f * Time.deltaTime
-        );
+            basePlayerSpeed * speedMultiplier * Time.deltaTime);
         HeadPosition = PlayerPosition;
 
         Vector2 rawScreenVelocity = Vector2.zero;
@@ -185,8 +195,11 @@ public class ParticleSimulation : MonoBehaviour
         simulationShader.SetFloat("time", Time.time);
         simulationShader.SetFloat("deltaTime", dt);
         // simulationShader.SetFloat("mouseSpeed", ...) <- Zeile entfernen, nicht mehr gebraucht
-        simulationShader.SetFloat("tangentialStiffness", tangentialStiffness);
-        simulationShader.SetFloat("lateralStiffness", lateralStiffness);
+        float cohesionMultiplier = tuning != null ? tuning.swarmCohesionMultiplier : 1f;
+        simulationShader.SetFloat(
+            "tangentialStiffness", baseTangentialStiffness * cohesionMultiplier);
+        simulationShader.SetFloat(
+            "lateralStiffness", baseLateralStiffness * cohesionMultiplier);
         simulationShader.SetFloat("trailWidth", trailWidth);
         simulationShader.SetFloat("idleWidth", idleWidth);
         simulationShader.SetFloat("tailTaper", tailTaper);
@@ -205,11 +218,13 @@ public class ParticleSimulation : MonoBehaviour
         );
     }
 
-    public void TakeDamage()
+    public void TakeDamage(int amount)
     {
-        Debug.Log("Hit Box");
+        if (amount <= 0 || ActiveParticles <= 0)
+            return;
+
         StartCoroutine(DamageFlash());
-        RemoveParticles(100);
+        RemoveParticles(amount);
     }
 
     IEnumerator DamageFlash()
@@ -223,14 +238,14 @@ public class ParticleSimulation : MonoBehaviour
 
     void UpdateObstacleBuffer()
     {
-        Obstacle[] sceneObstacles = FindObjectsOfType<Obstacle>();
+        Obstacle[] sceneObstacles = FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
 
         obstacles = new ObstacleData[sceneObstacles.Length];
 
         for (int i = 0; i < sceneObstacles.Length; i++)
         {
             obstacles[i].position = sceneObstacles[i].transform.position;
-            obstacles[i].radius = sceneObstacles[i].radius;
+            obstacles[i].radius = sceneObstacles[i].Radius;
         }
 
 
@@ -268,9 +283,11 @@ public class ParticleSimulation : MonoBehaviour
     }
     public void RemoveParticles(int amount)
     {
-        ActiveParticles = Mathf.Max(0, ActiveParticles - amount);
+        int actualLoss = Mathf.Min(ActiveParticles, Mathf.Max(0, amount));
+        ActiveParticles -= actualLoss;
 
         simulationShader.SetInt("particleCount", ActiveParticles);
+        PerformanceAnalyzer.Instance?.RegisterParticleLoss(actualLoss);
     }
 
     public void ResetMouse()
