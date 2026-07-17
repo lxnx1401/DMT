@@ -7,6 +7,9 @@ public class MainMenuController : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+        LevelManager.Instance?.ResetToFirstLevel();
+        GameManager.Instance?.StartNewGame();
+
         SceneManager.LoadScene(gameplaySceneName);
     }
 
