@@ -28,6 +28,7 @@ Shader "Custom/ParticleShader"
 
             StructuredBuffer<Particle> particles;
             float _ParticleRadius;
+            float4 _TintColor;
 
             struct Varyings
             {
@@ -44,7 +45,6 @@ Shader "Custom/ParticleShader"
 
                 Particle p = particles[particleID];
 
-                // Quad corners, -1 to 1
                 float2 corners[6] = {
                     float2(-1, -1),
                     float2(-1,  1),
@@ -55,33 +55,23 @@ Shader "Custom/ParticleShader"
                 };
                 float2 corner = corners[cornerID];
 
-                // World → Clip space center
-                float4 clip = TransformWorldToHClip(float3(p.position, 0.0));
-
-                // Pixel-genaues Offset
-                float2 screen = float2(_ScreenParams.x, _ScreenParams.y);
-                float radius = _ParticleRadius;
-
-                // Offset in NDC-Space, korrekt skaliert
-                float2 offset = corner * radius / screen * 2.0 * clip.w;
-                clip.xy += offset;
+                // Offset in World Space anwenden -> skaliert automatisch mit Zoom
+                float3 worldPos = float3(p.position + corner * _ParticleRadius, 0.0);
+                float4 clip = TransformWorldToHClip(worldPos);
 
                 o.positionHCS = clip;
                 o.uv = corner;
                 return o;
             }
-
             float4 frag(Varyings i) : SV_Target
             {
                 float dist = length(i.uv);
-                
-                // Feste 1px AA — kein fwidth!
-                // radius in Pixeln, 1px Randbreite
-                float alpha = smoothstep(1.0, 1.0 - (1.0 / _ParticleRadius), dist);
+                float aa = fwidth(dist);
+                float alpha = 1.0 - smoothstep(1.0 - aa, 1.0, dist);
 
                 if (alpha <= 0.0) discard;
 
-                return float4(1, 1, 1, alpha * 0.75);
+                return float4(_TintColor.rgb, alpha * _TintColor.a);
             }
 
             ENDHLSL
