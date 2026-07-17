@@ -15,6 +15,10 @@ public class LevelCompletedLerp : MonoBehaviour
     [FormerlySerializedAs("text")]
     [SerializeField] private TMP_Text scoreText;
 
+    private TMP_Text lostTitleText;
+    private GameObject completedTitle;
+    private GameObject backToMenuButton;
+
     [Header("Animationseinstellungen")]
     [SerializeField] private float animationDuration = 0.4f;
 
@@ -66,6 +70,19 @@ public class LevelCompletedLerp : MonoBehaviour
 
     public void TriggerLevelCompleted()
     {
+        ShowResult(false);
+    }
+
+    public void TriggerLevelLost()
+    {
+        ShowResult(true);
+    }
+
+    private void ShowResult(bool hasLost)
+    {
+        if (isLevelCompleted)
+            return;
+
         isLevelCompleted = true;
         ResolveReferences();
 
@@ -78,9 +95,23 @@ public class LevelCompletedLerp : MonoBehaviour
         else
             Debug.LogWarning("Level completed score text is not assigned.", this);
 
+        if (completedTitle != null)
+            completedTitle.SetActive(!hasLost);
+        if (lostTitleText != null)
+        {
+            lostTitleText.gameObject.SetActive(hasLost);
+            lostTitleText.text = "You lost";
+        }
+
         if (nextButton != null)
-            nextButton.interactable = LevelManager.Instance != null &&
+        {
+            nextButton.gameObject.SetActive(!hasLost);
+            nextButton.interactable = !hasLost && LevelManager.Instance != null &&
                 LevelManager.Instance.HasNextLevel;
+        }
+
+        if (backToMenuButton != null)
+            backToMenuButton.SetActive(!hasLost);
 
         if (levelCompletedPanel == null)
         {
@@ -158,5 +189,50 @@ public class LevelCompletedLerp : MonoBehaviour
     {
         if (scoreText == null && levelCompletedPanel != null)
             scoreText = levelCompletedPanel.GetComponentInChildren<TMP_Text>(true);
+
+        if (levelCompletedPanel == null)
+            return;
+
+        if (completedTitle == null)
+        {
+            Transform title = levelCompletedPanel.Find("Titel");
+            completedTitle = title != null ? title.gameObject : null;
+        }
+
+        if (backToMenuButton == null)
+        {
+            Transform backButton = levelCompletedPanel.Find("Back to menu");
+            backToMenuButton = backButton != null ? backButton.gameObject : null;
+        }
+
+        if (lostTitleText == null)
+            lostTitleText = CreateLostTitle();
+    }
+
+    private TMP_Text CreateLostTitle()
+    {
+        GameObject titleObject = new GameObject(
+            "Lost Title",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(TextMeshProUGUI));
+        titleObject.layer = levelCompletedPanel.gameObject.layer;
+        titleObject.transform.SetParent(levelCompletedPanel, false);
+
+        RectTransform rect = titleObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(0f, 100f);
+        rect.sizeDelta = new Vector2(260f, 60f);
+
+        TextMeshProUGUI title = titleObject.GetComponent<TextMeshProUGUI>();
+        title.text = "You lost";
+        title.fontSize = 32f;
+        title.alignment = TextAlignmentOptions.Center;
+        title.color = Color.white;
+        title.raycastTarget = false;
+        titleObject.SetActive(false);
+        return title;
     }
 }

@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     private int collectedCrowns = 0;
     private LevelCompletedLerp levelCompletedMenu;
 
+    public bool IsGameOver { get; private set; }
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -32,11 +34,15 @@ public class GameManager : MonoBehaviour
         if (LevelManager.Instance?.CurrentLevel != null)
             requiredCrowns = LevelManager.Instance.CurrentLevel.crownAmount;
         collectedCrowns = 0;
+        IsGameOver = false;
     }
 
 
     public void CollectCrown()
     {
+        if (IsGameOver)
+            return;
+
         Debug.Log(
         "CollectCrown von: "
         + gameObject.GetInstanceID()
@@ -59,6 +65,10 @@ public class GameManager : MonoBehaviour
 
     void Win()
     {
+        if (IsGameOver)
+            return;
+
+        IsGameOver = true;
         levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();
         Debug.Log("GEWONNEN!");
 
@@ -66,5 +76,22 @@ public class GameManager : MonoBehaviour
             levelCompletedMenu.TriggerLevelCompleted();
         else
             Debug.LogError("Kein LevelCompletedLerp in der aktiven Szene gefunden.", this);
+    }
+
+    public void Lose()
+    {
+        if (IsGameOver)
+            return;
+
+        IsGameOver = true;
+        levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();
+
+        if (levelCompletedMenu != null)
+            levelCompletedMenu.TriggerLevelLost();
+        else
+        {
+            Debug.LogError("Kein LevelCompletedLerp für den Lose-Zustand gefunden.", this);
+            Time.timeScale = 0f;
+        }
     }
 }

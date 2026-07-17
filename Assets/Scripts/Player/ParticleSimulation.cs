@@ -283,11 +283,19 @@ public class ParticleSimulation : MonoBehaviour
     }
     public void RemoveParticles(int amount)
     {
+        int particlesBeforeDamage = ActiveParticles;
         int actualLoss = Mathf.Min(ActiveParticles, Mathf.Max(0, amount));
         ActiveParticles -= actualLoss;
 
         simulationShader.SetInt("particleCount", ActiveParticles);
         PerformanceAnalyzer.Instance?.RegisterParticleLoss(actualLoss);
+
+        if (particlesBeforeDamage > 0 && ActiveParticles == 0)
+        {
+            PerformanceAnalyzer.Instance?.CompleteSection(0);
+            GameManager.Instance?.Lose();
+            enabled = false;
+        }
     }
 
     public void ResetMouse()
