@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Serialization;
 
-
 public class LevelCompletedLerp : MonoBehaviour
 {
     [Header("UI Elemente")]
@@ -15,7 +14,8 @@ public class LevelCompletedLerp : MonoBehaviour
     [FormerlySerializedAs("text")]
     [SerializeField] private TMP_Text scoreText;
 
-    private TMP_Text lostTitleText;
+    [SerializeField] private GameObject lostImage;
+
     private GameObject completedTitle;
     private GameObject backToMenuButton;
     private GameObject scoreLabel;
@@ -104,10 +104,10 @@ public class LevelCompletedLerp : MonoBehaviour
 
         if (completedTitle != null)
             completedTitle.SetActive(!hasLost);
-        if (lostTitleText != null)
+        
+        if (lostImage != null)
         {
-            lostTitleText.gameObject.SetActive(hasLost);
-            lostTitleText.text = "You lost";
+            lostImage.SetActive(hasLost);
         }
 
         if (nextButton != null)
@@ -218,34 +218,10 @@ public class LevelCompletedLerp : MonoBehaviour
             scoreLabel = label != null ? label.gameObject : null;
         }
 
-        if (lostTitleText == null)
-            lostTitleText = CreateLostTitle();
-    }
-
-    private TMP_Text CreateLostTitle()
-    {
-        GameObject titleObject = new GameObject(
-            "Lost Title",
-            typeof(RectTransform),
-            typeof(CanvasRenderer),
-            typeof(TextMeshProUGUI));
-        titleObject.layer = levelCompletedPanel.gameObject.layer;
-        titleObject.transform.SetParent(levelCompletedPanel, false);
-
-        RectTransform rect = titleObject.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = new Vector2(0f, 100f);
-        rect.sizeDelta = new Vector2(260f, 60f);
-
-        TextMeshProUGUI title = titleObject.GetComponent<TextMeshProUGUI>();
-        title.text = "You lost";
-        title.fontSize = 32f;
-        title.alignment = TextAlignmentOptions.Center;
-        title.color = Color.white;
-        title.raycastTarget = false;
-        titleObject.SetActive(false);
-        return title;
+        if (lostImage == null)
+        {
+            Transform lostImgTransform = levelCompletedPanel.Find("LostImage");
+            lostImage = lostImgTransform != null ? lostImgTransform.gameObject : null;
+        }
     }
 }

@@ -40,21 +40,15 @@ public class PauseMenuLerp : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        // Reagiert nur noch auf die Leertaste, wenn das Spiel aktuell NICHT pausiert ist
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && !isPaused)
         {
             if (levelCompletedScript != null && levelCompletedScript.IsLevelCompleted)
             {
                 return; 
             }
 
-            if (isPaused)
-            {
-                ResumeGame();
-            }
-            else
-            {
-                PauseGame();
-            }
+            PauseGame();
         }
     }
 
