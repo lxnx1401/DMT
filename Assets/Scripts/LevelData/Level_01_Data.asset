@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   crownAmount: 5
   obstacleAmount: 8
+  worldSize: 20

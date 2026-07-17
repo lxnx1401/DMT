@@ -5,4 +5,5 @@ public class LevelData : ScriptableObject
 {
     public int crownAmount;
     public int obstacleAmount;
+    public int worldSize;
 }
