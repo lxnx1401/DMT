@@ -1,80 +1,93 @@
 using System;
 using UnityEngine;
 
+[DefaultExecutionOrder(-1000)]
 public class DifficultyManager : MonoBehaviour
 {
-    [Header("Difficulty Range")]
     [SerializeField, Range(0f, 1f)] private float minDifficulty = 0.1f;
     [SerializeField, Range(0f, 1f)] private float maxDifficulty = 1f;
-    [SerializeField, Min(0f)] private float difficultyChangeSpeed = 0.08f;
-
-    [Header("Desired Struggle Range")]
-    [SerializeField, Range(0f, 1f)] private float targetStruggleMin = 0.3f;
+    [SerializeField, Min(0f)] private float difficultyStep = 0.08f;
+    [SerializeField, Range(0f, 1f)] private float targetStruggleMin = 0.25f;
     [SerializeField, Range(0f, 1f)] private float targetStruggleMax = 0.6f;
-
-    [Header("Runtime State")]
     [SerializeField] private DifficultyTuning currentTuning = new DifficultyTuning();
 
+    public static DifficultyManager Instance { get; private set; }
     public DifficultyTuning CurrentTuning => currentTuning;
     public event Action<DifficultyTuning> OnDifficultyChanged;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void CreateRuntimeServices()
+    {
+        if (FindFirstObjectByType<DifficultyManager>() != null)
+            return;
+
+        GameObject services = new GameObject("Adaptive Runtime");
+        services.AddComponent<DifficultyManager>();
+        services.AddComponent<PerformanceAnalyzer>();
+        DontDestroyOnLoad(services);
+    }
+
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
         ValidateSettings();
         currentTuning.DeriveFromDifficulty(
             Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty));
     }
 
-    private void OnValidate()
-    {
-        ValidateSettings();
-        if (currentTuning != null)
-            currentTuning.DeriveFromDifficulty(
-                Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty));
-    }
-
     public void EvaluateSection(SectionPerformanceData data)
     {
         if (data == null)
-        {
-            Debug.LogWarning("Difficulty evaluation skipped because section data was null.", this);
             return;
-        }
 
         float struggle = data.OverallStruggleScore;
-        float targetDifficulty = currentTuning.difficulty;
+        float direction = 0f;
 
         if (struggle < targetStruggleMin)
-            targetDifficulty = maxDifficulty;
+            direction = 1f;
         else if (struggle > targetStruggleMax)
-            targetDifficulty = minDifficulty;
+            direction = -1f;
 
-        float previousDifficulty = currentTuning.difficulty;
-        float nextDifficulty = Mathf.MoveTowards(
-            previousDifficulty,
-            targetDifficulty,
-            difficultyChangeSpeed);
-
-        nextDifficulty = Mathf.Clamp(nextDifficulty, minDifficulty, maxDifficulty);
-        currentTuning.DeriveFromDifficulty(nextDifficulty);
+        float previous = currentTuning.difficulty;
+        float next = Mathf.Clamp(previous + direction * difficultyStep, minDifficulty, maxDifficulty);
+        currentTuning.DeriveFromDifficulty(next);
 
         Debug.Log(
-            $"Adaptive difficulty: checkpoint {data.checkpointIndex}, struggle " +
-            $"{struggle:0.00}, difficulty {previousDifficulty:0.00} -> {nextDifficulty:0.00}",
+            $"Adaptive section {data.sectionIndex}: struggle={struggle:0.00}, " +
+            $"difficulty={previous:0.00}->{next:0.00}, time={data.sectionTime:0.0}s, " +
+            $"lost={data.particlesLost}, hits={data.obstacleHits}",
             this);
 
         OnDifficultyChanged?.Invoke(currentTuning);
+    }
+
+    private void OnValidate()
+    {
+        ValidateSettings();
+        currentTuning?.DeriveFromDifficulty(
+            Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty));
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     private void ValidateSettings()
     {
         minDifficulty = Mathf.Clamp01(minDifficulty);
         maxDifficulty = Mathf.Clamp(maxDifficulty, minDifficulty, 1f);
-        difficultyChangeSpeed = Mathf.Max(0f, difficultyChangeSpeed);
+        difficultyStep = Mathf.Clamp(difficultyStep, 0f, 0.25f);
         targetStruggleMin = Mathf.Clamp01(targetStruggleMin);
         targetStruggleMax = Mathf.Clamp(targetStruggleMax, targetStruggleMin, 1f);
-
-        if (currentTuning == null)
-            currentTuning = new DifficultyTuning();
+        currentTuning ??= new DifficultyTuning();
     }
 }
