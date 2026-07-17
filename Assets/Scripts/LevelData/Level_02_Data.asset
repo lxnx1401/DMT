@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Level_02_Data
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   crownAmount: 10
+  obstacleAmount: 15

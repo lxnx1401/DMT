@@ -18,7 +18,7 @@ uint historyCount;
 
 float time;
 float deltaTime;
-float mouseSpeed; // geglättet aus C#
+float mouseSpeed;
 
 float tangentialStiffness;
 float lateralStiffness;
@@ -30,6 +30,17 @@ float stretchResponse;
 float maxSpeed;
 uint substeps;
 
+float minSpeed;
+float maxSpeed2;
+
+struct Obstacle
+{
+    float2 position;
+    float radius;
+};
+
+StructuredBuffer<Obstacle> obstacles;
+uint obstacleCount;
 
 float hash11(float p)
 {
@@ -39,7 +50,7 @@ float hash11(float p)
     return frac(p);
 }
 
-float sampleSpeedHistory(float t)            // NEU, analog zu sampleHistory
+float sampleSpeedHistory(float t)
 {
     float f = t * (float)(historyCount - 1);
     uint i0 = (uint)floor(f);
@@ -68,19 +79,17 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float seedA = hash11(index * 12.9898);
     float seedB = hash11(index * 78.233 + 1.0);
     float seedC = hash11(index * 45.164 + 2.0);
-    float lateralSeed = seedC * 2.0 - 1.0; // -1..1, ersetzt isotropes offset im Bewegungsfall
+    float lateralSeed = seedC * 2.0 - 1.0;
 
     float trailT = pow(seedA, 1.6);
     float2 pathPoint = sampleHistory(trailT);
     float localSpeed = sampleSpeedHistory(trailT);
 
-    // Pfadrichtung aus der Historie (Kopf -> Ende der Spur)
     float2 pathVec = mouseHistory[0] - mouseHistory[historyCount - 1];
     float pathLen = length(pathVec);
     float2 pathDir = pathLen > 0.001 ? pathVec / pathLen : float2(1.0, 0.0);
     float2 perp = float2(-pathDir.y, pathDir.x);
 
-    // Individuelles Wandern, immer aktiv
     float freqX = lerp(0.2, 0.5, seedA);
     float freqY = lerp(0.2, 0.5, seedB);
     float2 wander = float2(
@@ -88,31 +97,26 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         sin(time * freqY + seedB * 6.2831)
     ) * wanderStrength;
 
-    float stretch = saturate(localSpeed * stretchResponse);
-    stretch = stretch * stretch * (3.0 - 2.0 * stretch);
+    float stretch = smoothstep(minSpeed, maxSpeed2, localSpeed);
 
-    // Stillstand: runder Blob (isotroper Offset, wie bisher)
     float2 isoOffset = p.offset * idleWidth;
 
-    // Bewegung: schmale Linie senkrecht zur Bahn, hinten dünner (Meteor-Look)
     float taper = lerp(1.0, tailTaper, trailT);
     float2 dirOffset = perp * lateralSeed * trailWidth * taper;
 
     float2 lateral = lerp(isoOffset, dirOffset, stretch);
     float2 target = pathPoint + lateral + wander;
 
-    // Substeps für stabile Feder-Integration, unabhängig von Steifigkeit/Framerate
     float subDt = deltaTime / (float)substeps;
     for (uint s = 0; s < substeps; s++)
     {
         float2 diff = target - p.position;
 
-        // Entlang der Bahn vs. quer zur Bahn getrennt federn
         float along = dot(diff, pathDir);
         float across = dot(diff, perp);
 
         float2 force = (pathDir * along * tangentialStiffness
-                       + perp * across * lateralStiffness) * p.forceScale;
+                    + perp * across * lateralStiffness) * p.forceScale;
 
         p.velocity += force * subDt;
         p.velocity *= pow(p.damping, subDt * 60.0);
@@ -121,7 +125,43 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         if (speed > maxSpeed)
             p.velocity = p.velocity / speed * maxSpeed;
 
+        float2 prevPos = p.position;  
         p.position += p.velocity * subDt;
+
+        // Kollision NACH der Bewegung auflösen
+        
+        float bounciness = 1.6; // >1 = übertriebener, knalliger Bounce; 1.0 = "normaler" Abprall; 0 = alte Version (nur stoppen)
+        float pushOutForce = 40.0; // zusätzlicher Schubs nach außen, damit's nicht "klebt"
+
+        for (uint i = 0; i < obstacleCount; i++)
+        {
+            Obstacle o = obstacles[i];
+
+            float2 toObstacle = o.position - prevPos;
+            float2 moveVec = p.position - prevPos;
+            float moveLen = length(moveVec);
+            float2 moveDir = moveLen > 0.0001 ? moveVec / moveLen : float2(0, 0);
+
+            float proj = clamp(dot(toObstacle, moveDir), 0.0, moveLen);
+            float2 closestPoint = prevPos + moveDir * proj;
+
+            float2 delta = closestPoint - o.position;
+            float dist = length(delta);
+
+            if (dist < o.radius)
+            {
+                float2 normal = dist > 0.0001 ? delta / dist : float2(1, 0);
+
+                p.position = o.position + normal * (o.radius * 1.001);
+
+                float vn = dot(p.velocity, normal);
+                if (vn < 0)
+                    p.velocity -= normal * vn * (1.0 + bounciness); // Reflexion statt nur Stoppen
+
+                // Zusätzlicher Impuls nach außen, damit es "knallt" statt nur abgleitet
+                p.velocity += normal * pushOutForce * subDt;
+            }
+        }
     }
 
     particles[index] = p;
