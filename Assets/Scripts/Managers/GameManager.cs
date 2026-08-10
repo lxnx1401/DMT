@@ -4,8 +4,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-
-    public int requiredCrowns;
+    public int RequiredCrowns => LevelManager.Instance?.CurrentLevel?.crownAmount ?? 0;
 
     private int collectedCrowns = 0;
     private LevelCompletedLerp levelCompletedMenu;
@@ -31,8 +30,6 @@ public class GameManager : MonoBehaviour
 
     public void LevelRestart()
     {
-        if (LevelManager.Instance?.CurrentLevel != null)
-            requiredCrowns = LevelManager.Instance.CurrentLevel.crownAmount;
         collectedCrowns = 0;
         IsGameOver = false;
     }
@@ -41,9 +38,6 @@ public class GameManager : MonoBehaviour
     {
         collectedCrowns = 0;
         IsGameOver = false;
-
-        if (LevelManager.Instance?.CurrentLevel != null)
-            requiredCrowns = LevelManager.Instance.CurrentLevel.crownAmount;
     }
 
 
@@ -62,11 +56,11 @@ public class GameManager : MonoBehaviour
             "Kronen: "
             + collectedCrowns
             + "/"
-            + requiredCrowns
+            + RequiredCrowns
         );
 
 
-        if (collectedCrowns >= requiredCrowns)
+        if (collectedCrowns >= RequiredCrowns)
         {
             Win();
         }
