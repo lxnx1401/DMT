@@ -14,6 +14,8 @@ public class LevelCompletedLerp : MonoBehaviour
     [FormerlySerializedAs("text")]
     [SerializeField] private TMP_Text scoreText;
 
+    [SerializeField] private TMP_Text highscoreText;
+
     [SerializeField] private GameObject lostImage;
 
     private GameObject completedTitle;
@@ -101,6 +103,23 @@ public class LevelCompletedLerp : MonoBehaviour
 
         if (scoreLabel != null)
             scoreLabel.SetActive(!hasLost);
+
+        if (!hasLost && LevelManager.Instance != null)
+        {
+            int levelIndex = LevelManager.Instance.currentLevel;
+            HighscoreManager.TrySubmitScore(levelIndex, activeParticles);
+            int highscore = HighscoreManager.GetHighscore(levelIndex);
+
+            if (highscoreText != null)
+            {
+                highscoreText.gameObject.SetActive(true);
+                highscoreText.text = "Best: " + highscore.ToString("000");
+            }
+        }
+        else if (highscoreText != null)
+        {
+            highscoreText.gameObject.SetActive(false);
+        }
 
         if (completedTitle != null)
             completedTitle.SetActive(!hasLost);
