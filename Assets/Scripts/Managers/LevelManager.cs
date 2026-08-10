@@ -1,28 +1,31 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
 
-    public LevelData[] levels;
-
     public int currentLevel = 0;
 
+    private readonly Dictionary<int, LevelData> generatedLevels = new Dictionary<int, LevelData>();
 
     public LevelData CurrentLevel
     {
         get
         {
-            if (levels == null || currentLevel < 0 || levels.Length <= currentLevel)
+            if (currentLevel < 0)
             {
-                Debug.LogError(
-                    "Kein LevelData für Index " + currentLevel
-                );
-
+                Debug.LogError("Ungültiger Level-Index " + currentLevel);
                 return null;
             }
 
-            return levels[currentLevel];
+            if (!generatedLevels.TryGetValue(currentLevel, out LevelData data))
+            {
+                data = LevelGenerator.Generate(currentLevel);
+                generatedLevels[currentLevel] = data;
+            }
+
+            return data;
         }
     }
 
@@ -45,13 +48,10 @@ public class LevelManager : MonoBehaviour
             Instance = null;
     }
 
-    public bool HasNextLevel => levels != null && currentLevel + 1 < levels.Length;
+    public bool HasNextLevel => true;
 
     public bool TryNextLevel()
     {
-        if (!HasNextLevel)
-            return false;
-
         currentLevel++;
         Debug.Log("Neues Level: " + currentLevel);
         return true;
