@@ -90,8 +90,10 @@ public class LaserEnemySpawner : MonoBehaviour
 
     private Bounds GetSpawnBounds(Bounds playAreaBounds)
     {
-        Vector2 minimum = playAreaBounds.min + Vector2.one * additionalBoundaryPadding;
-        Vector2 maximum = playAreaBounds.max - Vector2.one * additionalBoundaryPadding;
+        Vector2 minimum = playAreaBounds.min;
+        Vector2 maximum = playAreaBounds.max;
+        minimum += Vector2.one * additionalBoundaryPadding;
+        maximum -= Vector2.one * additionalBoundaryPadding;
 
         if (minimum.x >= maximum.x || minimum.y >= maximum.y)
         {
