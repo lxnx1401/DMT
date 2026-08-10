@@ -6,8 +6,8 @@ public class LaserEnemy : MonoBehaviour
     [SerializeField] private float rotationSpeed = 90f;
 
     [Header("Pulse (Länge)")]
-    [SerializeField] private float minLength = 0.5f;
-    [SerializeField] private float maxLength = 1.5f;
+    [SerializeField] private float minLengthMultiplier = 0.7f;
+    [SerializeField] private float maxLengthMultiplier = 1.3f;
     [SerializeField, Min(0.01f)] private float pulseSpeed = 1f;
 
     [Header("Damage")]
@@ -31,8 +31,8 @@ public class LaserEnemy : MonoBehaviour
         transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
 
         float t = (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f;
-        float length = Mathf.Lerp(minLength, maxLength, t);
-        transform.localScale = new Vector3(length, baseScale.y, baseScale.z);
+        float lengthMultiplier = Mathf.Lerp(minLengthMultiplier, maxLengthMultiplier, t);
+        transform.localScale = new Vector3(baseScale.x * lengthMultiplier, baseScale.y, baseScale.z);
     }
 
     private void OnTriggerStay2D(Collider2D other)

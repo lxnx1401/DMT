@@ -10,6 +10,7 @@ public static class LevelGenerator
         LevelData level = ScriptableObject.CreateInstance<LevelData>();
         level.crownAmount = 3 + index + random.Next(0, 2);
         level.obstacleAmount = 4 + index * 2 + random.Next(0, 3);
+        level.laserAmount = index / 3;
         level.worldSize = 16 + index * 3;
         return level;
     }
