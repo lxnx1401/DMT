@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7601957104855896985}
   - component: {fileID: 8272537800366274215}
   - component: {fileID: 2352420054429256581}
-  - component: {fileID: 8626702279489082330}
+  - component: {fileID: 929052513079685756}
   m_Layer: 0
   m_Name: Krone
   m_TagString: Untagged
@@ -129,7 +129,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.8
---- !u!114 &8626702279489082330
+--- !u!114 &929052513079685756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
