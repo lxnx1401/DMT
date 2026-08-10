@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
             return;
 
         IsGameOver = true;
+        LevelManager.Instance?.UnlockNextLevel();
         levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();
         Debug.Log("GEWONNEN!");
 

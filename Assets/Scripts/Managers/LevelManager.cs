@@ -3,11 +3,26 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    private const string UnlockedLevelsKey = "UnlockedLevels";
+
     public static LevelManager Instance { get; private set; }
 
     public int currentLevel = 0;
 
     private readonly Dictionary<int, LevelData> generatedLevels = new Dictionary<int, LevelData>();
+
+    public int UnlockedLevelCount => Mathf.Max(1, PlayerPrefs.GetInt(UnlockedLevelsKey, 1));
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void CreateRuntimeServices()
+    {
+        if (FindFirstObjectByType<LevelManager>() != null)
+            return;
+
+        GameObject services = new GameObject("Level Services");
+        services.AddComponent<LevelManager>();
+        DontDestroyOnLoad(services);
+    }
 
     public LevelData CurrentLevel
     {
@@ -60,5 +75,24 @@ public class LevelManager : MonoBehaviour
     public void ResetToFirstLevel()
     {
         currentLevel = 0;
+    }
+
+    public bool TrySelectLevel(int levelIndex)
+    {
+        if (levelIndex < 0 || levelIndex >= UnlockedLevelCount)
+            return false;
+
+        currentLevel = levelIndex;
+        return true;
+    }
+
+    public void UnlockNextLevel()
+    {
+        int required = currentLevel + 2;
+        if (required <= UnlockedLevelCount)
+            return;
+
+        PlayerPrefs.SetInt(UnlockedLevelsKey, required);
+        PlayerPrefs.Save();
     }
 }
