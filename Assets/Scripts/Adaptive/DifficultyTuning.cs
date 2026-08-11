@@ -14,7 +14,7 @@ public class DifficultyTuning
     public float blackHoleDamageMultiplier = 1f;
 
     private const int IntensityStartLevelIndex = 8; // Level 9 (0-indexed) is the last unscaled level
-    private const float IntensityGrowthPerLevel = 0.5f;
+    private const float IntensityGrowthPerLevel = 3f;
     private const float SafeClearance = 6f;
 
     public void DeriveFromDifficulty(float value, int levelIndex = 0)
