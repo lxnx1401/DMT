@@ -300,6 +300,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuLerp
   menuPanel: {fileID: 493140124}
+  mainMixer: {fileID: 24100000, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
+  musicSlider: {fileID: 1081892822}
+  musicMuteToggle: {fileID: 571697794}
+  soundSlider: {fileID: 213184074}
+  soundMuteToggle: {fileID: 1696538709}
+  musicParam: MusicVol
+  soundParam: SoundVol
   levelCompletedScript: {fileID: 51801372}
   animationDuration: 0.3
 --- !u!4 &51801371
@@ -688,6 +695,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!1 &238671247
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,6 +750,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &238671250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1398,6 +1407,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!1 &625508009
 GameObject:
   m_ObjectHideFlags: 0
@@ -1527,6 +1537,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &658883400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2180,6 +2191,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &811659882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2901,6 +2913,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!1 &1112622777
 GameObject:
   m_ObjectHideFlags: 0
@@ -3030,6 +3043,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &1191977911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3481,6 +3495,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &1336662710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3740,6 +3755,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &1535919409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3951,6 +3967,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &1604664978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4486,6 +4503,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!1 &1804985954
 GameObject:
   m_ObjectHideFlags: 0
@@ -4666,6 +4684,7 @@ MonoBehaviour:
   audioSource: {fileID: 805726572}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!114 &1893591652
 MonoBehaviour:
   m_ObjectHideFlags: 0
