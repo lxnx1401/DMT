@@ -29,7 +29,10 @@ public class LevelSelectController : MonoBehaviour
 
             TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
             if (label != null)
-                label.text = (levelIndex + 1).ToString();
+            {
+                int highscore = HighscoreManager.GetHighscore(levelIndex);
+                label.text = $"Level {levelIndex + 1}   Best: {highscore:000}";
+            }
 
             int capturedIndex = levelIndex;
             button.onClick.AddListener(() => SelectLevel(capturedIndex));
