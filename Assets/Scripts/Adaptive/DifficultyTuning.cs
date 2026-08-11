@@ -13,24 +13,42 @@ public class DifficultyTuning
     public float laserDamageMultiplier = 1f;
     public float blackHoleDamageMultiplier = 1f;
 
-    public void DeriveFromDifficulty(float value)
+    private const int IntensityStartLevelIndex = 8; // Level 9 (0-indexed) is the last unscaled level
+    private const float IntensityGrowthPerLevel = 0.5f;
+    private const float SafeClearance = 6f;
+
+    public void DeriveFromDifficulty(float value, int levelIndex = 0)
     {
         difficulty = Mathf.Clamp01(value);
 
-        playerSpeedMultiplier = Mathf.Lerp(0.85f, 1.35f, difficulty);
-        obstacleDamageMultiplier = Mathf.Lerp(0.6f, 1.5f, difficulty);
-        obstacleSpawnMultiplier = Mathf.Lerp(0.75f, 1.35f, difficulty);
-        swarmCohesionMultiplier = Mathf.Lerp(1.25f, 0.8f, difficulty);
-        coinObstacleClearance = Mathf.Lerp(6f, 1f, difficulty);
-        laserDamageMultiplier = Mathf.Lerp(0.6f, 1.5f, difficulty);
-        blackHoleDamageMultiplier = Mathf.Lerp(0.6f, 1.5f, difficulty);
+        float intensity = 1f + Mathf.Max(0, levelIndex - IntensityStartLevelIndex) * IntensityGrowthPerLevel;
 
-        playerSpeedMultiplier = Mathf.Clamp(playerSpeedMultiplier, 0.75f, 1.5f);
-        obstacleDamageMultiplier = Mathf.Clamp(obstacleDamageMultiplier, 0.5f, 1.75f);
-        obstacleSpawnMultiplier = Mathf.Clamp(obstacleSpawnMultiplier, 0.5f, 1.5f);
-        swarmCohesionMultiplier = Mathf.Clamp(swarmCohesionMultiplier, 0.75f, 1.4f);
-        coinObstacleClearance = Mathf.Clamp(coinObstacleClearance, 0.75f, 8f);
-        laserDamageMultiplier = Mathf.Clamp(laserDamageMultiplier, 0.5f, 1.75f);
-        blackHoleDamageMultiplier = Mathf.Clamp(blackHoleDamageMultiplier, 0.5f, 1.75f);
+        playerSpeedMultiplier = ScaleMultiplier(Mathf.Lerp(0.85f, 1.35f, difficulty), intensity, 0.75f, 1.5f);
+        obstacleDamageMultiplier = ScaleMultiplier(Mathf.Lerp(0.6f, 1.5f, difficulty), intensity, 0.5f, 1.75f);
+        obstacleSpawnMultiplier = ScaleMultiplier(Mathf.Lerp(0.75f, 1.35f, difficulty), intensity, 0.5f, 1.5f);
+        swarmCohesionMultiplier = ScaleMultiplier(Mathf.Lerp(1.25f, 0.8f, difficulty), intensity, 0.75f, 1.4f);
+        laserDamageMultiplier = ScaleMultiplier(Mathf.Lerp(0.6f, 1.5f, difficulty), intensity, 0.5f, 1.75f);
+        blackHoleDamageMultiplier = ScaleMultiplier(Mathf.Lerp(0.6f, 1.5f, difficulty), intensity, 0.5f, 1.75f);
+        coinObstacleClearance = ScaleClearance(Mathf.Lerp(SafeClearance, 1f, difficulty), intensity);
+    }
+
+    // Verstärkt die Abweichung eines Multiplikators von seinem neutralen Wert (1.0) mit der Intensität,
+    // und weitet dabei auch die Clamp-Grenzen auf - sonst würde die alte Obergrenze die Wirkung weiter kappen.
+    private static float ScaleMultiplier(float baseValue, float intensity, float baseClampLow, float baseClampHigh)
+    {
+        float deviation = (baseValue - 1f) * intensity;
+        float expandedLow = 1f - (1f - baseClampLow) * intensity;
+        float expandedHigh = 1f + (baseClampHigh - 1f) * intensity;
+        return Mathf.Clamp(1f + deviation, expandedLow, expandedHigh);
+    }
+
+    // Bei difficulty=0 bleibt der Abstand immer bei SafeClearance (sicher, unabhängig vom Level).
+    // Erst die Abweichung durch steigende difficulty wird mit der Intensität verstärkt, und die
+    // Untergrenze schrumpft mit dem Level - "Abstände reagieren extrem auf die Difficulty".
+    private static float ScaleClearance(float baseValue, float intensity)
+    {
+        float deviation = (baseValue - SafeClearance) * intensity;
+        float floor = Mathf.Max(0.15f, 0.75f / intensity);
+        return Mathf.Clamp(SafeClearance + deviation, floor, 8f);
     }
 }

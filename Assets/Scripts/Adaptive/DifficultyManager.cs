@@ -39,7 +39,8 @@ public class DifficultyManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         ValidateSettings();
         currentTuning.DeriveFromDifficulty(
-            Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty));
+            Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty),
+            CurrentLevelIndex);
     }
 
     public void EvaluateSection(SectionPerformanceData data)
@@ -57,7 +58,7 @@ public class DifficultyManager : MonoBehaviour
 
         float previous = currentTuning.difficulty;
         float next = Mathf.Clamp(previous + direction * difficultyStep, minDifficulty, maxDifficulty);
-        currentTuning.DeriveFromDifficulty(next);
+        currentTuning.DeriveFromDifficulty(next, CurrentLevelIndex);
 
         Debug.Log(
             $"Adaptive section {data.sectionIndex}: struggle={struggle:0.00}, " +
@@ -72,8 +73,12 @@ public class DifficultyManager : MonoBehaviour
     {
         ValidateSettings();
         currentTuning?.DeriveFromDifficulty(
-            Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty));
+            Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty),
+            CurrentLevelIndex);
     }
+
+    private static int CurrentLevelIndex =>
+        LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
 
     private void OnDestroy()
     {
