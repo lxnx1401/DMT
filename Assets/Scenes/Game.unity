@@ -2126,7 +2126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 224e235ab41d3944cadfd54868aa28f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
-  menuSceneName: Menu
 --- !u!1 &811659879
 GameObject:
   m_ObjectHideFlags: 0
@@ -2225,8 +2224,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 51801370}
-        m_TargetAssemblyTypeName: PauseMenuLerp, Assembly-CSharp
+      - m_Target: {fileID: 51801372}
+        m_TargetAssemblyTypeName: LevelCompletedLerp, Assembly-CSharp
         m_MethodName: OnBackToMenuPressed
         m_Mode: 5
         m_Arguments:
