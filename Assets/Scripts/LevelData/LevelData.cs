@@ -7,6 +7,7 @@ public class LevelData : ScriptableObject
     public int crownAmount;
     public int obstacleAmount;
     public int laserAmount;
+    public int blackHoleAmount;
 
     [Header("Play Area")]
     [Min(5)]
@@ -28,6 +29,7 @@ public class LevelData : ScriptableObject
         crownAmount = Mathf.Max(0, crownAmount);
         obstacleAmount = Mathf.Max(0, obstacleAmount);
         laserAmount = Mathf.Max(0, laserAmount);
+        blackHoleAmount = Mathf.Max(0, blackHoleAmount);
         worldSize = Mathf.Max(5, worldSize);
     }
 }

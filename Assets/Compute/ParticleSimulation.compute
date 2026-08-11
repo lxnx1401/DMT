@@ -42,6 +42,17 @@ struct Obstacle
 StructuredBuffer<Obstacle> obstacles;
 uint obstacleCount;
 
+struct BlackHole
+{
+    float2 position;
+    float radius;
+    float pullRadius;
+    float strength;
+};
+
+StructuredBuffer<BlackHole> blackHoles;
+uint blackHoleCount;
+
 float hash11(float p)
 {
     p = frac(p * 0.1031);
@@ -118,6 +129,19 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         float2 force = (pathDir * along * tangentialStiffness
                     + perp * across * lateralStiffness) * p.forceScale;
 
+        for (uint bh = 0; bh < blackHoleCount; bh++)
+        {
+            BlackHole hole = blackHoles[bh];
+            float2 toHole = hole.position - p.position;
+            float holeDist = length(toHole);
+            if (holeDist > 0.0001 && holeDist < hole.pullRadius)
+            {
+                float2 pullDir = toHole / holeDist;
+                float clampedDist = max(holeDist, hole.radius * 0.5);
+                force += pullDir * hole.strength / (clampedDist * clampedDist);
+            }
+        }
+
         p.velocity += force * subDt;
         p.velocity *= pow(p.damping, subDt * 60.0);
 
@@ -160,6 +184,16 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
                 // Zusätzlicher Impuls nach außen, damit es "knallt" statt nur abgleitet
                 p.velocity += normal * pushOutForce * subDt;
+            }
+        }
+
+        for (uint h = 0; h < blackHoleCount; h++)
+        {
+            BlackHole hole = blackHoles[h];
+            if (length(p.position - hole.position) < hole.radius)
+            {
+                p.position = pathPoint + p.offset * idleWidth;
+                p.velocity = float2(0, 0);
             }
         }
     }
