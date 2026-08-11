@@ -336,6 +336,7 @@ MonoBehaviour:
   animationDuration: 0.6
   restartButton: {fileID: 1191977911}
   nextButton: {fileID: 658883400}
+  musicGameObject: {fileID: 1006719975}
 --- !u!1 &106093543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1639,7 +1640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4307f7da1652de946891201700d66f67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  requiredCrowns: 5
 --- !u!4 &671461671
 Transform:
   m_ObjectHideFlags: 0
@@ -2126,6 +2126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 224e235ab41d3944cadfd54868aa28f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
+  menuSceneName: Menu
 --- !u!1 &811659879
 GameObject:
   m_ObjectHideFlags: 0
@@ -2362,7 +2363,7 @@ GameObject:
   - component: {fileID: 1006719977}
   m_Layer: 0
   m_Name: Musik
-  m_TagString: Untagged
+  m_TagString: Music
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

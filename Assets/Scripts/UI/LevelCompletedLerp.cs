@@ -35,6 +35,8 @@ public class LevelCompletedLerp : MonoBehaviour
     [SerializeField] private Button restartButton;
     [SerializeField] private Button nextButton;
 
+    [Header("Audio Einstellungen")]
+    [SerializeField] private GameObject musicGameObject;
 
     void Awake()
     {
@@ -178,8 +180,14 @@ public class LevelCompletedLerp : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+        if (MusicManager.Instance != null)
+        {
+            Destroy(MusicManager.Instance.gameObject);
+        }
+
         SceneManager.LoadScene(menuSceneName);
     }
+
     private IEnumerator AnimateMenu(float targetXValue)
     {
         float elapsedTime = 0f;
