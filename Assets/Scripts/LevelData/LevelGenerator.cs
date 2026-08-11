@@ -11,7 +11,7 @@ public static class LevelGenerator
         level.crownAmount = 3 + index + random.Next(0, 2);
         level.obstacleAmount = 4 + index * 2 + random.Next(0, 3);
         level.laserAmount = index / 3;
-        level.worldSize = 16 + index * 3;
+        level.worldSize = 24 + index * 5;
         return level;
     }
 }
