@@ -1,28 +1,46 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    public static LevelManager Instance { get; private set; }
+    private const string UnlockedLevelsKey = "UnlockedLevels";
 
-    public LevelData[] levels;
+    public static LevelManager Instance { get; private set; }
 
     public int currentLevel = 0;
 
+    private readonly Dictionary<int, LevelData> generatedLevels = new Dictionary<int, LevelData>();
+
+    public int UnlockedLevelCount => Mathf.Max(1, PlayerPrefs.GetInt(UnlockedLevelsKey, 1));
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void CreateRuntimeServices()
+    {
+        if (FindFirstObjectByType<LevelManager>() != null)
+            return;
+
+        GameObject services = new GameObject("Level Services");
+        services.AddComponent<LevelManager>();
+        DontDestroyOnLoad(services);
+    }
 
     public LevelData CurrentLevel
     {
         get
         {
-            if (levels == null || currentLevel < 0 || levels.Length <= currentLevel)
+            if (currentLevel < 0)
             {
-                Debug.LogError(
-                    "Kein LevelData für Index " + currentLevel
-                );
-
+                Debug.LogError("Ungültiger Level-Index " + currentLevel);
                 return null;
             }
 
-            return levels[currentLevel];
+            if (!generatedLevels.TryGetValue(currentLevel, out LevelData data))
+            {
+                data = LevelGenerator.Generate(currentLevel);
+                generatedLevels[currentLevel] = data;
+            }
+
+            return data;
         }
     }
 
@@ -45,13 +63,10 @@ public class LevelManager : MonoBehaviour
             Instance = null;
     }
 
-    public bool HasNextLevel => levels != null && currentLevel + 1 < levels.Length;
+    public bool HasNextLevel => true;
 
     public bool TryNextLevel()
     {
-        if (!HasNextLevel)
-            return false;
-
         currentLevel++;
         Debug.Log("Neues Level: " + currentLevel);
         return true;
@@ -60,5 +75,24 @@ public class LevelManager : MonoBehaviour
     public void ResetToFirstLevel()
     {
         currentLevel = 0;
+    }
+
+    public bool TrySelectLevel(int levelIndex)
+    {
+        if (levelIndex < 0 || levelIndex >= UnlockedLevelCount)
+            return false;
+
+        currentLevel = levelIndex;
+        return true;
+    }
+
+    public void UnlockNextLevel()
+    {
+        int required = currentLevel + 2;
+        if (required <= UnlockedLevelCount)
+            return;
+
+        PlayerPrefs.SetInt(UnlockedLevelsKey, required);
+        PlayerPrefs.Save();
     }
 }

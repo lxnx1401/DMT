@@ -331,6 +331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelCompletedLerp
   levelCompletedPanel: {fileID: 296596507}
   scoreText: {fileID: 1011258985}
+  highscoreText: {fileID: 0}
   lostImage: {fileID: 1112622777}
   animationDuration: 0.6
   restartButton: {fileID: 1191977911}
@@ -366,6 +367,7 @@ Transform:
   m_Children:
   - {fileID: 1621529156}
   - {fileID: 1657143068}
+  - {fileID: 559012341}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &124258091
@@ -1233,6 +1235,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 528277006}
   m_CullTransparentMesh: 1
+--- !u!1 &559012340
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 559012341}
+  - component: {fileID: 559012342}
+  m_Layer: 0
+  m_Name: LaserSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &559012341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559012340}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 106093544}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &559012342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559012340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a1c9d2b4e6478f9a2d5c7e8b1f4a3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LaserEnemySpawner
+  laserPrefab: {fileID: 7106282452165013043, guid: 8ddfeb0dcdcff4adc86962de6d93930a, type: 3}
+  additionalBoundaryPadding: 1
+  minimumLaserSpacing: 8
+  playerStartClearance: 8
+  candidatesPerLaser: 40
 --- !u!1 &571697792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1628,9 +1679,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fbfbd750baeba84e9964d2e57649a69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
-  levels:
-  - {fileID: 11400000, guid: b8821a34336de724b8f28a19779b5e45, type: 2}
-  - {fileID: 11400000, guid: 4b4559b8070865749ad5b30883d09138, type: 2}
   currentLevel: 0
 --- !u!1 &709262463
 GameObject:
