@@ -33,6 +33,11 @@ uint substeps;
 float minSpeed;
 float maxSpeed2;
 
+float neighborRadius;
+float preferredDistance;
+float cohesionStrength;
+float separationStrength;
+
 struct Obstacle
 {
     float2 position;
@@ -107,6 +112,31 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float2 lateral = lerp(isoOffset, dirOffset, stretch);
     float2 target = pathPoint + lateral + wander;
 
+    float2 localForce = float2(0.0, 0.0);
+    uint neighborCount = 0;
+    for (uint j = 0; j < particleCount; j++)
+    {
+        if (j == index)
+            continue;
+
+        Particle neighbor = particles[j];
+
+        float2 delta = neighbor.position - p.position;
+        float dist = length(delta);
+
+        if (dist < 0.0001 || dist > neighborRadius)
+            continue;
+
+        float2 dir = delta / dist;
+
+        float distanceError = dist - preferredDistance;
+
+        localForce += dir * distanceError;
+        neighborCount++;
+    }
+    if (neighborCount > 0)
+        localForce /= (float)neighborCount;
+
     float subDt = deltaTime / (float)substeps;
     for (uint s = 0; s < substeps; s++)
     {
@@ -115,8 +145,14 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         float along = dot(diff, pathDir);
         float across = dot(diff, perp);
 
-        float2 force = (pathDir * along * tangentialStiffness
-                    + perp * across * lateralStiffness) * p.forceScale;
+        float2 pathForce =
+            (pathDir * along * tangentialStiffness
+            + perp * across * lateralStiffness)
+            * p.forceScale;
+
+        float2 force =
+            pathForce
+            + localForce * cohesionStrength;
 
         p.velocity += force * subDt;
         p.velocity *= pow(p.damping, subDt * 60.0);

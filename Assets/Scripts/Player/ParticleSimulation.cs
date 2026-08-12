@@ -128,6 +128,11 @@ public class ParticleSimulation : MonoBehaviour
         simulationShader.SetFloat("minSpeed", minSpeed);
         simulationShader.SetFloat("maxSpeed2", maxSpeed2);
 
+        simulationShader.SetFloat("neighborRadius", 1.5f);
+        simulationShader.SetFloat("preferredDistance", 0.5f);
+        simulationShader.SetFloat("cohesionStrength", 20f);
+        simulationShader.SetFloat("separationStrength", 20f);
+
         // NEU: fehlte komplett
         particleMaterial = new Material(Shader.Find("Custom/ParticleShader"));
         particleMaterial.SetFloat("_ParticleRadius", 0.1f);
