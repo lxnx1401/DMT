@@ -152,6 +152,18 @@ public class ParticleSimulation : MonoBehaviour
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         return Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
     }
+
+    private Vector2 ClampToPlayArea(Vector2 point)
+    {
+        LevelData level = LevelManager.Instance?.CurrentLevel;
+        if (level == null)
+            return point;
+
+        Bounds bounds = level.PlayAreaBounds;
+        point.x = Mathf.Clamp(point.x, bounds.min.x, bounds.max.x);
+        point.y = Mathf.Clamp(point.y, bounds.min.y, bounds.max.y);
+        return point;
+    }
     private Vector2 lastMouseScreen;
 
     void Update()
@@ -160,6 +172,7 @@ public class ParticleSimulation : MonoBehaviour
 
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
+        mouseWorld = ClampToPlayArea(mouseWorld);
 
         // NEU: PlayerPosition wieder aktualisieren
         DifficultyTuning tuning = DifficultyManager.Instance != null
@@ -170,6 +183,7 @@ public class ParticleSimulation : MonoBehaviour
             PlayerPosition,
             mouseWorld,
             basePlayerSpeed * speedMultiplier * Time.deltaTime);
+        PlayerPosition = ClampToPlayArea(PlayerPosition);
         HeadPosition = PlayerPosition;
 
         Vector2 rawScreenVelocity = Vector2.zero;
