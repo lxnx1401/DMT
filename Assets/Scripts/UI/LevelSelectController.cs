@@ -22,6 +22,8 @@ public class LevelSelectController : MonoBehaviour
         foreach (Transform child in buttonContainer)
             Destroy(child.gameObject);
 
+        AddEndlessButton();
+
         int unlockedCount = LevelManager.Instance.UnlockedLevelCount;
         for (int levelIndex = 0; levelIndex < unlockedCount; levelIndex++)
         {
@@ -45,6 +47,33 @@ public class LevelSelectController : MonoBehaviour
             return;
 
         LevelManager.Instance.IsEndlessMode = false;
+        Time.timeScale = 1f;
+        GameManager.Instance?.StartNewGame();
+        SceneManager.LoadScene(gameplaySceneName);
+    }
+
+    // Eigene Zeile über den Leveln - Highscore hier ist die Anzahl gesammelter Kronen
+    // über den ganzen Run, nicht die übrig gebliebenen Partikel wie bei den Leveln.
+    private void AddEndlessButton()
+    {
+        Button button = Instantiate(levelButtonPrefab, buttonContainer);
+
+        TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+        {
+            int highscore = HighscoreManager.GetEndlessHighscore();
+            label.text = $"Endless   Best: {highscore:000}";
+        }
+
+        button.onClick.AddListener(SelectEndless);
+    }
+
+    private void SelectEndless()
+    {
+        if (LevelManager.Instance == null)
+            return;
+
+        LevelManager.Instance.IsEndlessMode = true;
         Time.timeScale = 1f;
         GameManager.Instance?.StartNewGame();
         SceneManager.LoadScene(gameplaySceneName);
