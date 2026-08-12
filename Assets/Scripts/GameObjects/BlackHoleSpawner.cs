@@ -14,7 +14,23 @@ public class BlackHoleSpawner : MonoBehaviour
 
     private void Start()
     {
-        LevelData level = LevelManager.Instance?.CurrentLevel;
+        if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode)
+            return;
+
+        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
+        SpawnFor(LevelManager.Instance?.CurrentLevel, levelIndex);
+    }
+
+    public void ClearSpawned()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            Destroy(transform.GetChild(i).gameObject);
+
+        Amount = 0;
+    }
+
+    public void SpawnFor(LevelData level, int seedIndex)
+    {
         if (level == null || blackHolePrefab == null)
             return;
 
@@ -23,18 +39,17 @@ public class BlackHoleSpawner : MonoBehaviour
             return;
 
         Bounds spawnBounds = GetSpawnBounds(level.PlayAreaBounds);
-        SpawnBlackHoles(spawnBounds);
+        SpawnBlackHoles(spawnBounds, seedIndex);
     }
 
-    private void SpawnBlackHoles(Bounds bounds)
+    private void SpawnBlackHoles(Bounds bounds, int seedIndex)
     {
         List<Vector2> positions = new List<Vector2>(Amount);
         Vector2 playerStart = ParticleSimulation.Instance != null
             ? ParticleSimulation.Instance.PlayerPosition
             : Vector2.zero;
 
-        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
-        int seed = 2917 + levelIndex * 4231;
+        int seed = 2917 + seedIndex * 4231;
         System.Random random = new System.Random(seed);
 
         for (int i = 0; i < Amount; i++)
@@ -48,7 +63,7 @@ public class BlackHoleSpawner : MonoBehaviour
             }
 
             positions.Add(position);
-            Instantiate(blackHolePrefab, position, Quaternion.identity);
+            Instantiate(blackHolePrefab, position, Quaternion.identity, transform);
         }
 
         Amount = positions.Count;

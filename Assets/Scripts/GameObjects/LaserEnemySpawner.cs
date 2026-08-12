@@ -14,7 +14,23 @@ public class LaserEnemySpawner : MonoBehaviour
 
     private void Start()
     {
-        LevelData level = LevelManager.Instance?.CurrentLevel;
+        if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode)
+            return;
+
+        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
+        SpawnFor(LevelManager.Instance?.CurrentLevel, levelIndex);
+    }
+
+    public void ClearSpawned()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            Destroy(transform.GetChild(i).gameObject);
+
+        Amount = 0;
+    }
+
+    public void SpawnFor(LevelData level, int seedIndex)
+    {
         if (level == null || laserPrefab == null)
             return;
 
@@ -23,18 +39,17 @@ public class LaserEnemySpawner : MonoBehaviour
             return;
 
         Bounds spawnBounds = GetSpawnBounds(level.PlayAreaBounds);
-        SpawnLasers(spawnBounds);
+        SpawnLasers(spawnBounds, seedIndex);
     }
 
-    private void SpawnLasers(Bounds bounds)
+    private void SpawnLasers(Bounds bounds, int seedIndex)
     {
         List<Vector2> positions = new List<Vector2>(Amount);
         Vector2 playerStart = ParticleSimulation.Instance != null
             ? ParticleSimulation.Instance.PlayerPosition
             : Vector2.zero;
 
-        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
-        int seed = 6151 + levelIndex * 1543;
+        int seed = 6151 + seedIndex * 1543;
         System.Random random = new System.Random(seed);
 
         for (int i = 0; i < Amount; i++)
@@ -48,7 +63,7 @@ public class LaserEnemySpawner : MonoBehaviour
             }
 
             positions.Add(position);
-            Instantiate(laserPrefab, position, Quaternion.identity);
+            Instantiate(laserPrefab, position, Quaternion.identity, transform);
         }
 
         Amount = positions.Count;

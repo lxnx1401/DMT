@@ -369,6 +369,7 @@ Transform:
   - {fileID: 1657143068}
   - {fileID: 559012341}
   - {fileID: 9777888999111222}
+  - {fileID: 1122334455667789}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &124258091
@@ -1334,6 +1335,54 @@ MonoBehaviour:
   minimumBlackHoleSpacing: 10
   playerStartClearance: 10
   candidatesPerBlackHole: 40
+--- !u!1 &1122334455667788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1122334455667789}
+  - component: {fileID: 1122334455667790}
+  m_Layer: 0
+  m_Name: EndlessModeController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1122334455667789
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122334455667788}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 106093544}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1122334455667790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122334455667788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 078a2601629a49128cff55ba6182a6d7, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::EndlessModeController
+  obstacleSpawner: {fileID: 1657143069}
+  crownSpawner: {fileID: 1621529157}
+  laserSpawner: {fileID: 559012342}
+  blackHoleSpawner: {fileID: 9888999111222333}
 --- !u!1 &571697792
 GameObject:
   m_ObjectHideFlags: 0

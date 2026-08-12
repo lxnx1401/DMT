@@ -4,9 +4,19 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public int RequiredCrowns => LevelManager.Instance?.CurrentLevel?.crownAmount ?? 0;
+    public int RequiredCrowns => IsEndlessMode
+        ? Mathf.Max(1, EndlessModeController.Instance?.CurrentWave?.crownAmount ?? 1)
+        : LevelManager.Instance?.CurrentLevel?.crownAmount ?? 0;
 
+    private bool IsEndlessMode => LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode;
+
+    // Kronen im aktuellen Level/Welle - wird bei jeder Welle im Endlos-Modus zurückgesetzt.
     private int collectedCrowns = 0;
+
+    // Gesamtzahl der Kronen im laufenden Run - läuft im Endlos-Modus über alle Wellen weiter
+    // und ist die Score, die am Ende an HighscoreManager übergeben wird.
+    private int totalCrownsThisRun = 0;
+
     private LevelCompletedLerp levelCompletedMenu;
 
     public bool IsGameOver { get; private set; }
@@ -31,36 +41,34 @@ public class GameManager : MonoBehaviour
     public void LevelRestart()
     {
         collectedCrowns = 0;
+        totalCrownsThisRun = 0;
         IsGameOver = false;
     }
 
     public void StartNewGame()
     {
         collectedCrowns = 0;
+        totalCrownsThisRun = 0;
         IsGameOver = false;
     }
-
 
     public void CollectCrown()
     {
         if (IsGameOver)
             return;
 
-        Debug.Log(
-        "CollectCrown von: "
-        + gameObject.GetInstanceID()
-    );
         collectedCrowns++;
+        totalCrownsThisRun++;
 
-        Debug.Log(
-            "Kronen: "
-            + collectedCrowns
-            + "/"
-            + RequiredCrowns
-        );
+        if (collectedCrowns < RequiredCrowns)
+            return;
 
-
-        if (collectedCrowns >= RequiredCrowns)
+        if (IsEndlessMode)
+        {
+            collectedCrowns = 0;
+            EndlessModeController.Instance?.AdvanceWave();
+        }
+        else
         {
             Win();
         }
@@ -74,7 +82,6 @@ public class GameManager : MonoBehaviour
         IsGameOver = true;
         LevelManager.Instance?.UnlockNextLevel();
         levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();
-        Debug.Log("GEWONNEN!");
 
         if (levelCompletedMenu != null)
             levelCompletedMenu.TriggerLevelCompleted();
@@ -88,6 +95,10 @@ public class GameManager : MonoBehaviour
             return;
 
         IsGameOver = true;
+
+        if (IsEndlessMode)
+            HighscoreManager.TrySubmitEndlessScore(totalCrownsThisRun);
+
         levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();
 
         if (levelCompletedMenu != null)

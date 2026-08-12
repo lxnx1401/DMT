@@ -44,6 +44,7 @@ public class LevelSelectController : MonoBehaviour
         if (LevelManager.Instance == null || !LevelManager.Instance.TrySelectLevel(levelIndex))
             return;
 
+        LevelManager.Instance.IsEndlessMode = false;
         Time.timeScale = 1f;
         GameManager.Instance?.StartNewGame();
         SceneManager.LoadScene(gameplaySceneName);
