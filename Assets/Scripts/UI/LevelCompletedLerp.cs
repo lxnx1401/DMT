@@ -59,16 +59,14 @@ public class LevelCompletedLerp : MonoBehaviour
             nextButton.onClick.AddListener(LoadNextLevel);
     }
 
+#if UNITY_EDITOR
+    // Debug-Shortcut zum schnellen Testen des Completed-Screens - läuft nie in einem Build.
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
-        {
-            if (!isLevelCompleted)
-            {
-                TriggerLevelCompleted();
-            }
-        }
+        if (Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame && !isLevelCompleted)
+            TriggerLevelCompleted();
     }
+#endif
 
     public void TriggerLevelCompleted()
     {
