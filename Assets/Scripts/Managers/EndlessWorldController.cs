@@ -28,8 +28,8 @@ public class EndlessWorldController : MonoBehaviour
     [SerializeField, Range(1, 5)] private int unloadRadius = 2;
 
     [Header("Dichte pro Kachel (bei Distanz 0)")]
-    [SerializeField, Min(0)] private int baseCrownsPerTile = 1;
-    [SerializeField, Min(0)] private int baseObstaclesPerTile = 0;
+    [SerializeField, Min(0)] private int baseCrownsPerTile = 2;
+    [SerializeField, Min(0)] private int baseObstaclesPerTile = 1;
 
     public static EndlessWorldController Instance { get; private set; }
 
@@ -157,11 +157,11 @@ public class EndlessWorldController : MonoBehaviour
 
         System.Random random = new System.Random(SeedFor(tile.Coord));
 
-        int obstacleCount = baseObstaclesPerTile + random.Next(0, 1 + tile.DistanceIndex / 3);
-        int crownCount = baseCrownsPerTile + random.Next(0, 2);
-        int laserCount = tile.DistanceIndex >= 4 && random.NextDouble() < 0.3 ? 1 : 0;
-        int rangedEnemyCount = tile.DistanceIndex >= 5 && random.NextDouble() < 0.25 ? 1 : 0;
-        int blackHoleCount = tile.DistanceIndex >= 8 && random.NextDouble() < 0.2 ? 1 : 0;
+        int obstacleCount = baseObstaclesPerTile + random.Next(0, 2 + tile.DistanceIndex / 2);
+        int crownCount = baseCrownsPerTile + random.Next(0, 3);
+        int laserCount = tile.DistanceIndex >= 4 && random.NextDouble() < 0.4 ? 1 : 0;
+        int rangedEnemyCount = tile.DistanceIndex >= 5 && random.NextDouble() < 0.35 ? 1 : 0;
+        int blackHoleCount = tile.DistanceIndex >= 8 && random.NextDouble() < 0.3 ? 1 : 0;
 
         SpawnInTile(obstaclePrefab, obstacleCount, tile, random);
         SpawnInTile(laserPrefab, laserCount, tile, random);
