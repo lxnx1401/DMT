@@ -20,6 +20,7 @@ public class EndlessWorldController : MonoBehaviour
     [SerializeField] private GameObject crownPrefab;
     [SerializeField] private GameObject laserPrefab;
     [SerializeField] private GameObject blackHolePrefab;
+    [SerializeField] private GameObject rangedEnemyPrefab;
 
     [Header("Kacheln")]
     [SerializeField, Min(10f)] private float tileSize = 40f;
@@ -159,10 +160,12 @@ public class EndlessWorldController : MonoBehaviour
         int obstacleCount = baseObstaclesPerTile + random.Next(0, 1 + tile.DistanceIndex / 3);
         int crownCount = baseCrownsPerTile + random.Next(0, 2);
         int laserCount = tile.DistanceIndex >= 4 && random.NextDouble() < 0.3 ? 1 : 0;
+        int rangedEnemyCount = tile.DistanceIndex >= 5 && random.NextDouble() < 0.25 ? 1 : 0;
         int blackHoleCount = tile.DistanceIndex >= 8 && random.NextDouble() < 0.2 ? 1 : 0;
 
         SpawnInTile(obstaclePrefab, obstacleCount, tile, random);
         SpawnInTile(laserPrefab, laserCount, tile, random);
+        SpawnInTile(rangedEnemyPrefab, rangedEnemyCount, tile, random);
         SpawnInTile(blackHolePrefab, blackHoleCount, tile, random);
         SpawnInTile(crownPrefab, crownCount, tile, random);
     }
