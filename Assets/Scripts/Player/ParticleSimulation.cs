@@ -246,7 +246,7 @@ public class ParticleSimulation : MonoBehaviour
         particleMaterial.SetBuffer("particles", particleBuffer);
         Graphics.DrawProcedural(
             particleMaterial,
-            new Bounds(Vector3.zero, Vector3.one * 1000),
+            new Bounds(new Vector3(PlayerPosition.x, PlayerPosition.y, 0f), Vector3.one * 1000),
             MeshTopology.Triangles,
             ActiveParticles * 6
         );
