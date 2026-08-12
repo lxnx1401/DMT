@@ -15,7 +15,23 @@ public class ObstacleSpawner : MonoBehaviour
 
     private void Start()
     {
-        LevelData level = LevelManager.Instance?.CurrentLevel;
+        if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode)
+            return;
+
+        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
+        SpawnFor(LevelManager.Instance?.CurrentLevel, levelIndex);
+    }
+
+    public void ClearSpawned()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            Destroy(transform.GetChild(i).gameObject);
+
+        Amount = 0;
+    }
+
+    public void SpawnFor(LevelData level, int seedIndex)
+    {
         if (level == null || obstaclePrefab == null)
         {
             Debug.LogWarning("ObstacleSpawner requires level data and an obstacle prefab.", this);
@@ -36,18 +52,17 @@ public class ObstacleSpawner : MonoBehaviour
             return;
 
         Bounds spawnBounds = GetSpawnBounds(level.PlayAreaBounds);
-        SpawnDistributedObstacles(spawnBounds);
+        SpawnDistributedObstacles(spawnBounds, seedIndex);
     }
 
-    private void SpawnDistributedObstacles(Bounds bounds)
+    private void SpawnDistributedObstacles(Bounds bounds, int seedIndex)
     {
         List<Vector2> positions = new List<Vector2>(Amount);
         Vector2 playerStart = ParticleSimulation.Instance != null
             ? ParticleSimulation.Instance.PlayerPosition
             : Vector2.zero;
 
-        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
-        int seed = 173 + levelIndex * 7919 + Mathf.RoundToInt(
+        int seed = 173 + seedIndex * 7919 + Mathf.RoundToInt(
             (DifficultyManager.Instance?.CurrentTuning.difficulty ?? 0.5f) * 100f);
         System.Random random = new System.Random(seed);
 
@@ -63,7 +78,7 @@ public class ObstacleSpawner : MonoBehaviour
             }
 
             positions.Add(position);
-            Instantiate(obstaclePrefab, position, Quaternion.identity);
+            Instantiate(obstaclePrefab, position, Quaternion.identity, transform);
         }
 
         Amount = positions.Count;

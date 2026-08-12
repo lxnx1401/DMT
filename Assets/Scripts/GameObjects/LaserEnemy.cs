@@ -51,7 +51,7 @@ public class LaserEnemy : MonoBehaviour
             : 1f;
 
         int damage = Mathf.Max(0, Mathf.RoundToInt(baseParticleDamage * multiplier));
-        PerformanceAnalyzer.Instance?.RegisterObstacleHit();
+        PerformanceAnalyzer.Instance?.RegisterObstacleHit(HazardType.Laser);
         ParticleSimulation.Instance?.TakeDamage(damage);
     }
 

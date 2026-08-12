@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance { get; private set; }
 
     public int currentLevel = 0;
+    public bool IsEndlessMode { get; set; }
 
     private readonly Dictionary<int, LevelData> generatedLevels = new Dictionary<int, LevelData>();
 

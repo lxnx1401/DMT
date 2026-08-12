@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DefaultExecutionOrder(-100)]
-public class LaserEnemySpawner : MonoBehaviour
+public class RangedEnemySpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject laserPrefab;
+    [SerializeField] private GameObject rangedEnemyPrefab;
     [SerializeField, Min(0f)] private float additionalBoundaryPadding = 1f;
-    [SerializeField, Min(0.1f)] private float minimumLaserSpacing = 8f;
-    [SerializeField, Min(0f)] private float playerStartClearance = 8f;
-    [SerializeField, Range(5, 100)] private int candidatesPerLaser = 40;
+    [SerializeField, Min(0.1f)] private float minimumSpacing = 10f;
+    [SerializeField, Min(0f)] private float playerStartClearance = 9f;
+    [SerializeField, Range(5, 100)] private int candidatesPerEnemy = 40;
 
     public int Amount { get; private set; }
 
@@ -31,25 +31,25 @@ public class LaserEnemySpawner : MonoBehaviour
 
     public void SpawnFor(LevelData level, int seedIndex)
     {
-        if (level == null || laserPrefab == null)
+        if (level == null || rangedEnemyPrefab == null)
             return;
 
-        Amount = Mathf.Max(0, level.laserAmount);
+        Amount = Mathf.Max(0, level.rangedEnemyAmount);
         if (Amount == 0)
             return;
 
         Bounds spawnBounds = GetSpawnBounds(level.PlayAreaBounds);
-        SpawnLasers(spawnBounds, seedIndex);
+        SpawnEnemies(spawnBounds, seedIndex);
     }
 
-    private void SpawnLasers(Bounds bounds, int seedIndex)
+    private void SpawnEnemies(Bounds bounds, int seedIndex)
     {
         List<Vector2> positions = new List<Vector2>(Amount);
         Vector2 playerStart = ParticleSimulation.Instance != null
             ? ParticleSimulation.Instance.PlayerPosition
             : Vector2.zero;
 
-        int seed = 6151 + seedIndex * 1543;
+        int seed = 5813 + seedIndex * 2749;
         System.Random random = new System.Random(seed);
 
         for (int i = 0; i < Amount; i++)
@@ -57,13 +57,13 @@ public class LaserEnemySpawner : MonoBehaviour
             if (!TryFindPosition(bounds, positions, playerStart, random, out Vector2 position))
             {
                 Debug.LogWarning(
-                    $"Only {positions.Count} of {Amount} laser enemies fit inside the world boundary.",
+                    $"Only {positions.Count} of {Amount} ranged enemies fit inside the world boundary.",
                     this);
                 break;
             }
 
             positions.Add(position);
-            Instantiate(laserPrefab, position, Quaternion.identity, transform);
+            Instantiate(rangedEnemyPrefab, position, Quaternion.identity, transform);
         }
 
         Amount = positions.Count;
@@ -79,7 +79,7 @@ public class LaserEnemySpawner : MonoBehaviour
         bestPosition = default;
         float bestDistance = -1f;
 
-        for (int attempt = 0; attempt < candidatesPerLaser; attempt++)
+        for (int attempt = 0; attempt < candidatesPerEnemy; attempt++)
         {
             Vector2 candidate = new Vector2(
                 Mathf.Lerp(bounds.min.x, bounds.max.x, (float)random.NextDouble()),
@@ -93,7 +93,7 @@ public class LaserEnemySpawner : MonoBehaviour
             foreach (Vector2 existing in existingPositions)
                 closestDistance = Mathf.Min(closestDistance, Vector2.Distance(candidate, existing));
 
-            if (closestDistance < minimumLaserSpacing || closestDistance <= bestDistance)
+            if (closestDistance < minimumSpacing || closestDistance <= bestDistance)
                 continue;
 
             bestDistance = closestDistance;
@@ -112,7 +112,7 @@ public class LaserEnemySpawner : MonoBehaviour
 
         if (minimum.x >= maximum.x || minimum.y >= maximum.y)
         {
-            Debug.LogError("World boundary is too small for laser enemy placement.", this);
+            Debug.LogError("World boundary is too small for ranged enemy placement.", this);
             return new Bounds(Vector3.zero, Vector3.one * 2f);
         }
 
