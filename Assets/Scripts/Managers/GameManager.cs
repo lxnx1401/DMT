@@ -4,17 +4,15 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public int RequiredCrowns => IsEndlessMode
-        ? Mathf.Max(1, EndlessModeController.Instance?.CurrentWave?.crownAmount ?? 1)
-        : LevelManager.Instance?.CurrentLevel?.crownAmount ?? 0;
+    public int RequiredCrowns => LevelManager.Instance?.CurrentLevel?.crownAmount ?? 0;
 
     private bool IsEndlessMode => LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode;
 
-    // Kronen im aktuellen Level/Welle - wird bei jeder Welle im Endlos-Modus zurückgesetzt.
     private int collectedCrowns = 0;
 
-    // Gesamtzahl der Kronen im laufenden Run - läuft im Endlos-Modus über alle Wellen weiter
-    // und ist die Score, die am Ende an HighscoreManager übergeben wird.
+    // Gesamtzahl der Kronen im laufenden Run - im Endlos-Modus die Score, die am Ende
+    // an HighscoreManager übergeben wird. Der Fortschritt der Welt läuft dort rein über
+    // die Kachel-Distanz zum Spieler, nicht mehr über einen Kronen-Zähler.
     private int totalCrownsThisRun = 0;
 
     private LevelCompletedLerp levelCompletedMenu;
@@ -60,18 +58,11 @@ public class GameManager : MonoBehaviour
         collectedCrowns++;
         totalCrownsThisRun++;
 
-        if (collectedCrowns < RequiredCrowns)
+        if (IsEndlessMode)
             return;
 
-        if (IsEndlessMode)
-        {
-            collectedCrowns = 0;
-            EndlessModeController.Instance?.AdvanceWave();
-        }
-        else
-        {
+        if (collectedCrowns >= RequiredCrowns)
             Win();
-        }
     }
 
     void Win()

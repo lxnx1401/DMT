@@ -108,8 +108,16 @@ public class DifficultyManager : MonoBehaviour
         }
     }
 
-    private static int CurrentLevelIndex =>
-        LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
+    private static int CurrentLevelIndex
+    {
+        get
+        {
+            if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode)
+                return EndlessWorldController.Instance?.MaxDistanceIndex ?? 0;
+
+            return LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
+        }
+    }
 
     private void OnDestroy()
     {

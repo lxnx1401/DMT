@@ -1346,7 +1346,7 @@ GameObject:
   - component: {fileID: 1122334455667789}
   - component: {fileID: 1122334455667790}
   m_Layer: 0
-  m_Name: EndlessModeController
+  m_Name: EndlessWorldController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1376,13 +1376,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1122334455667788}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 078a2601629a49128cff55ba6182a6d7, type: 3}
+  m_Script: {fileID: 11500000, guid: c6d8f9a1b2e34c5d8f9a1b2e34c5d8f9, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::EndlessModeController
-  obstacleSpawner: {fileID: 1657143069}
-  crownSpawner: {fileID: 1621529157}
-  laserSpawner: {fileID: 559012342}
-  blackHoleSpawner: {fileID: 9888999111222333}
+  m_EditorClassIdentifier: Assembly-CSharp::EndlessWorldController
+  obstaclePrefab: {fileID: 83671163285043792, guid: 3a8108c4eaa8b654da47a8528a7d8659, type: 3}
+  crownPrefab: {fileID: 7893658628646874407, guid: a7053ae76e42cb941beed2d207c675cf, type: 3}
+  laserPrefab: {fileID: 7106282452165013043, guid: 8ddfeb0dcdcff4adc86962de6d93930a, type: 3}
+  blackHolePrefab: {fileID: 9111222333444555, guid: bbecd701e0a14ed7b4f8d0d80ebeab3a, type: 3}
+  tileSize: 40
+  activeRadius: 1
+  unloadRadius: 2
 --- !u!1 &571697792
 GameObject:
   m_ObjectHideFlags: 0
