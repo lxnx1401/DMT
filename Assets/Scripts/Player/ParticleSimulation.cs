@@ -40,6 +40,9 @@ public class ParticleSimulation : MonoBehaviour
     [SerializeField] private int trailHistoryLength = 48;
     [SerializeField] private float trailDuration = 0.35f; // wie lange die Spur "hält" (Sekunden)
 
+    [Header("Weltgrenze")]
+    [SerializeField, Min(0f)] private float boundaryMargin = 3f; // Sicherheitsabstand, damit der ausgefranste Schwarmrand nicht optisch über die Linie geht
+
     [Header("Tuning")]
     [SerializeField] private float tangentialStiffness = 140f;
     [SerializeField] private float lateralStiffness = 260f;    // > tangential = engere Formhaltung
@@ -160,8 +163,10 @@ public class ParticleSimulation : MonoBehaviour
             return point;
 
         Bounds bounds = level.PlayAreaBounds;
-        point.x = Mathf.Clamp(point.x, bounds.min.x, bounds.max.x);
-        point.y = Mathf.Clamp(point.y, bounds.min.y, bounds.max.y);
+        float marginX = Mathf.Min(boundaryMargin, bounds.size.x * 0.5f);
+        float marginY = Mathf.Min(boundaryMargin, bounds.size.y * 0.5f);
+        point.x = Mathf.Clamp(point.x, bounds.min.x + marginX, bounds.max.x - marginX);
+        point.y = Mathf.Clamp(point.y, bounds.min.y + marginY, bounds.max.y - marginY);
         return point;
     }
     private Vector2 lastMouseScreen;
