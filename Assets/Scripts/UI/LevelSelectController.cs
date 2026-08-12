@@ -7,11 +7,28 @@ public class LevelSelectController : MonoBehaviour
 {
     [SerializeField] private RectTransform buttonContainer;
     [SerializeField] private Button levelButtonPrefab;
+    [SerializeField] private Button endlessButton; 
     [SerializeField] private string gameplaySceneName = "Game";
 
     private void OnEnable()
     {
+        SetupEndlessButton(); 
         Populate();
+    }
+
+    private void SetupEndlessButton()
+    {
+        if (endlessButton == null) return;
+
+        TMP_Text label = endlessButton.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+        {
+            int highscore = HighscoreManager.GetEndlessHighscore();
+            label.text = $"Endless   Best: {highscore:000}";
+        }
+
+        endlessButton.onClick.RemoveAllListeners();
+        endlessButton.onClick.AddListener(SelectEndless);
     }
 
     private void Populate()
@@ -22,7 +39,6 @@ public class LevelSelectController : MonoBehaviour
         foreach (Transform child in buttonContainer)
             Destroy(child.gameObject);
 
-        AddEndlessButton();
 
         int unlockedCount = LevelManager.Instance.UnlockedLevelCount;
         for (int levelIndex = 0; levelIndex < unlockedCount; levelIndex++)
@@ -50,22 +66,6 @@ public class LevelSelectController : MonoBehaviour
         Time.timeScale = 1f;
         GameManager.Instance?.StartNewGame();
         SceneManager.LoadScene(gameplaySceneName);
-    }
-
-    // Eigene Zeile über den Leveln - Highscore hier ist die Anzahl gesammelter Kronen
-    // über den ganzen Run, nicht die übrig gebliebenen Partikel wie bei den Leveln.
-    private void AddEndlessButton()
-    {
-        Button button = Instantiate(levelButtonPrefab, buttonContainer);
-
-        TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
-        if (label != null)
-        {
-            int highscore = HighscoreManager.GetEndlessHighscore();
-            label.text = $"Endless   Best: {highscore:000}";
-        }
-
-        button.onClick.AddListener(SelectEndless);
     }
 
     private void SelectEndless()
