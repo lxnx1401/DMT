@@ -158,7 +158,10 @@ public class ParticleSimulation : MonoBehaviour
 
     private Vector2 ClampToPlayArea(Vector2 point)
     {
-        LevelData level = LevelManager.Instance?.CurrentLevel;
+        LevelData level = LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode
+            ? EndlessModeController.Instance?.CurrentWave
+            : LevelManager.Instance?.CurrentLevel;
+
         if (level == null)
             return point;
 
