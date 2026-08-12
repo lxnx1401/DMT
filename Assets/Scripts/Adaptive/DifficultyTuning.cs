@@ -23,6 +23,11 @@ public class DifficultyTuning
     [Range(0f, 1f)] public float blackHoleDifficulty = 0.5f;
     public float blackHoleDamageMultiplier = 1f;
 
+    [Header("Ranged Enemy")]
+    [Range(0f, 1f)] public float rangedDifficulty = 0.5f;
+    public float rangedDamageMultiplier = 1f;
+    public float rangedFireRateMultiplier = 1f;
+
     private const int IntensityStartLevelIndex = 8; // Level 9 (0-indexed) is the last unscaled level
     private const float IntensityGrowthPerLevel = 3f;
     private const float SafeClearance = 6f;
@@ -46,6 +51,7 @@ public class DifficultyTuning
         {
             case HazardType.Laser: return laserDifficulty;
             case HazardType.BlackHole: return blackHoleDifficulty;
+            case HazardType.Ranged: return rangedDifficulty;
             default: return obstacleDifficulty;
         }
     }
@@ -67,6 +73,12 @@ public class DifficultyTuning
             case HazardType.BlackHole:
                 blackHoleDifficulty = clamped;
                 blackHoleDamageMultiplier = ScaleMultiplier(Mathf.Lerp(0.6f, 1.5f, clamped), intensity, 0.5f, 1.75f);
+                break;
+
+            case HazardType.Ranged:
+                rangedDifficulty = clamped;
+                rangedDamageMultiplier = ScaleMultiplier(Mathf.Lerp(0.6f, 1.5f, clamped), intensity, 0.5f, 1.75f);
+                rangedFireRateMultiplier = ScaleMultiplier(Mathf.Lerp(0.75f, 1.5f, clamped), intensity, 0.5f, 1.75f);
                 break;
 
             default:

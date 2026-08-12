@@ -2,5 +2,6 @@ public enum HazardType
 {
     Obstacle,
     Laser,
-    BlackHole
+    BlackHole,
+    Ranged
 }
