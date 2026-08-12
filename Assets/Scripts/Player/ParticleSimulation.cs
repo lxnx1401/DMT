@@ -282,34 +282,24 @@ public class ParticleSimulation : MonoBehaviour
         if (obstacleBuffer != null)
             obstacleBuffer.Release();
 
+        obstacleBuffer = new ComputeBuffer(
+            Mathf.Max(1, obstacles.Length),
+            Marshal.SizeOf<ObstacleData>()
+        );
 
         if (obstacles.Length > 0)
-        {
-            obstacleBuffer = new ComputeBuffer(
-                obstacles.Length,
-                Marshal.SizeOf<ObstacleData>()
-            );
-
             obstacleBuffer.SetData(obstacles);
 
-            simulationShader.SetBuffer(
-                kernelIndex,
-                "obstacles",
-                obstacleBuffer
-            );
+        simulationShader.SetBuffer(
+            kernelIndex,
+            "obstacles",
+            obstacleBuffer
+        );
 
-            simulationShader.SetInt(
-                "obstacleCount",
-                obstacles.Length
-            );
-        }
-        else
-        {
-            simulationShader.SetInt(
-                "obstacleCount",
-                0
-            );
-        }
+        simulationShader.SetInt(
+            "obstacleCount",
+            obstacles.Length
+        );
     }
 
     void UpdateBlackHoleBuffer()
