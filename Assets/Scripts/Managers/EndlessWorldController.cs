@@ -159,9 +159,16 @@ public class EndlessWorldController : MonoBehaviour
 
         int obstacleCount = baseObstaclesPerTile + random.Next(0, 2 + tile.DistanceIndex / 2);
         int crownCount = baseCrownsPerTile + random.Next(0, 3);
-        int laserCount = tile.DistanceIndex >= 4 && random.NextDouble() < 0.4 ? 1 : 0;
-        int rangedEnemyCount = tile.DistanceIndex >= 5 && random.NextDouble() < 0.35 ? 1 : 0;
-        int blackHoleCount = tile.DistanceIndex >= 8 && random.NextDouble() < 0.3 ? 1 : 0;
+
+        // Keine harten Distanz-Schwellen mehr - jeder Gefahrentyp kann schon ganz am Anfang
+        // (kleine Chance) auftreten, wird mit der Distanz nur zunehmend wahrscheinlicher.
+        float laserChance = Mathf.Clamp01(0.08f + tile.DistanceIndex * 0.05f);
+        float rangedChance = Mathf.Clamp01(0.06f + tile.DistanceIndex * 0.04f);
+        float blackHoleChance = Mathf.Clamp01(0.03f + tile.DistanceIndex * 0.03f);
+
+        int laserCount = random.NextDouble() < laserChance ? 1 : 0;
+        int rangedEnemyCount = random.NextDouble() < rangedChance ? 1 : 0;
+        int blackHoleCount = random.NextDouble() < blackHoleChance ? 1 : 0;
 
         SpawnInTile(obstaclePrefab, obstacleCount, tile, random);
         SpawnInTile(laserPrefab, laserCount, tile, random);
