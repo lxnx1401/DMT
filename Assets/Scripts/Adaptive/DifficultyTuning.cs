@@ -30,10 +30,15 @@ public class DifficultyTuning
 
     private const int IntensityStartLevelIndex = 8; // Level 9 (0-indexed) is the last unscaled level
     private const float IntensityGrowthPerLevel = 3f;
+
+    // Deckelt die Eskalation - ohne das würde sie im Endlos-Modus (Distanz wächst unbegrenzt)
+    // irgendwann so extrem werden, dass Multiplikatoren negativ werden und der Schwarm im
+    // Compute-Shader numerisch instabil wird (unsichtbar/NaN), obwohl die Spiellogik weiterläuft.
+    private const float MaxIntensity = 60f;
     private const float SafeClearance = 6f;
 
     public static float ComputeIntensity(int levelIndex) =>
-        1f + Mathf.Max(0, levelIndex - IntensityStartLevelIndex) * IntensityGrowthPerLevel;
+        Mathf.Min(MaxIntensity, 1f + Mathf.Max(0, levelIndex - IntensityStartLevelIndex) * IntensityGrowthPerLevel);
 
     public void DeriveGlobal(float value, int levelIndex = 0)
     {
@@ -96,7 +101,11 @@ public class DifficultyTuning
         float deviation = (baseValue - 1f) * intensity;
         float expandedLow = 1f - (1f - baseClampLow) * intensity;
         float expandedHigh = 1f + (baseClampHigh - 1f) * intensity;
-        return Mathf.Clamp(1f + deviation, expandedLow, expandedHigh);
+        float result = Mathf.Clamp(1f + deviation, expandedLow, expandedHigh);
+
+        // Nie 0 oder negativ - würde z.B. die Schwarm-Kohäsionskraft im Shader umkehren
+        // (Partikel fliegen chaotisch weg statt zusammenzuhalten) oder Schaden zu Heilung machen.
+        return Mathf.Max(0.05f, result);
     }
 
     // Bei difficulty=0 bleibt der Abstand immer bei SafeClearance (sicher, unabhängig vom Level).
