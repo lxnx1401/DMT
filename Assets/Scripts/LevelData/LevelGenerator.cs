@@ -11,7 +11,9 @@ public static class LevelGenerator
         level.crownAmount = 3 + index + random.Next(0, 2);
         level.obstacleAmount = 4 + index * 2 + random.Next(0, 3);
         level.laserAmount = index / 3;
-        level.worldSize = 16 + index * 3;
+        level.blackHoleAmount = Mathf.Max(0, (index - 4) / 3);
+        level.rangedEnemyAmount = Mathf.Max(0, (index - 2) / 2);
+        level.worldSize = 32 + Mathf.RoundToInt(12f * Mathf.Sqrt(index));
         return level;
     }
 }

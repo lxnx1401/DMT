@@ -20,6 +20,14 @@ public class ParticleSimulation : MonoBehaviour
         public Vector2 position;
         public float radius;
     }
+    [StructLayout(LayoutKind.Sequential)]
+    struct BlackHoleData
+    {
+        public Vector2 position;
+        public float radius;
+        public float pullRadius;
+        public float strength;
+    }
 
     [SerializeField] private ComputeShader simulationShader;
     [SerializeField] private int particleCapacity = 1000;
@@ -31,6 +39,9 @@ public class ParticleSimulation : MonoBehaviour
     [Header("Trail / Path")]
     [SerializeField] private int trailHistoryLength = 48;
     [SerializeField] private float trailDuration = 0.35f; // wie lange die Spur "hält" (Sekunden)
+
+    [Header("Weltgrenze")]
+    [SerializeField, Min(0f)] private float boundaryMargin = 3f; // Sicherheitsabstand, damit der ausgefranste Schwarmrand nicht optisch über die Linie geht
 
     [Header("Tuning")]
     [SerializeField] private float tangentialStiffness = 140f;
@@ -47,6 +58,8 @@ public class ParticleSimulation : MonoBehaviour
     private ComputeBuffer mouseHistoryBuffer;
     private ComputeBuffer obstacleBuffer;
     private ObstacleData[] obstacles;
+    private ComputeBuffer blackHoleBuffer;
+    private BlackHoleData[] blackHoles;
     private Particle[] particles;
     private Vector2[] mouseHistory;
     private float sampleTimer;
@@ -119,6 +132,7 @@ public class ParticleSimulation : MonoBehaviour
 
         kernelIndex = simulationShader.FindKernel("CSMain");
         UpdateObstacleBuffer();
+        UpdateBlackHoleBuffer();
         simulationShader.SetBuffer(kernelIndex, "particles", particleBuffer);
         simulationShader.SetBuffer(kernelIndex, "mouseHistory", mouseHistoryBuffer);
         simulationShader.SetBuffer(kernelIndex, "mouseSpeedHistory", mouseSpeedHistoryBuffer); // NEU
@@ -141,6 +155,24 @@ public class ParticleSimulation : MonoBehaviour
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         return Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
     }
+
+    private Vector2 ClampToPlayArea(Vector2 point)
+    {
+        // Endlos-Modus: kein Rand mehr, echtes unendliches Durchwandern über Kacheln.
+        if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode)
+            return point;
+
+        LevelData level = LevelManager.Instance?.CurrentLevel;
+        if (level == null)
+            return point;
+
+        Bounds bounds = level.PlayAreaBounds;
+        float marginX = Mathf.Min(boundaryMargin, bounds.size.x * 0.5f);
+        float marginY = Mathf.Min(boundaryMargin, bounds.size.y * 0.5f);
+        point.x = Mathf.Clamp(point.x, bounds.min.x + marginX, bounds.max.x - marginX);
+        point.y = Mathf.Clamp(point.y, bounds.min.y + marginY, bounds.max.y - marginY);
+        return point;
+    }
     private Vector2 lastMouseScreen;
 
     void Update()
@@ -149,6 +181,7 @@ public class ParticleSimulation : MonoBehaviour
 
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
+        mouseWorld = ClampToPlayArea(mouseWorld);
 
         // NEU: PlayerPosition wieder aktualisieren
         DifficultyTuning tuning = DifficultyManager.Instance != null
@@ -159,6 +192,7 @@ public class ParticleSimulation : MonoBehaviour
             PlayerPosition,
             mouseWorld,
             basePlayerSpeed * speedMultiplier * Time.deltaTime);
+        PlayerPosition = ClampToPlayArea(PlayerPosition);
         HeadPosition = PlayerPosition;
 
         Vector2 rawScreenVelocity = Vector2.zero;
@@ -212,7 +246,7 @@ public class ParticleSimulation : MonoBehaviour
         particleMaterial.SetBuffer("particles", particleBuffer);
         Graphics.DrawProcedural(
             particleMaterial,
-            new Bounds(Vector3.zero, Vector3.one * 1000),
+            new Bounds(new Vector3(PlayerPosition.x, PlayerPosition.y, 0f), Vector3.one * 1000),
             MeshTopology.Triangles,
             ActiveParticles * 6
         );
@@ -252,35 +286,63 @@ public class ParticleSimulation : MonoBehaviour
         if (obstacleBuffer != null)
             obstacleBuffer.Release();
 
+        obstacleBuffer = new ComputeBuffer(
+            Mathf.Max(1, obstacles.Length),
+            Marshal.SizeOf<ObstacleData>()
+        );
 
         if (obstacles.Length > 0)
-        {
-            obstacleBuffer = new ComputeBuffer(
-                obstacles.Length,
-                Marshal.SizeOf<ObstacleData>()
-            );
-
             obstacleBuffer.SetData(obstacles);
 
-            simulationShader.SetBuffer(
-                kernelIndex,
-                "obstacles",
-                obstacleBuffer
-            );
+        simulationShader.SetBuffer(
+            kernelIndex,
+            "obstacles",
+            obstacleBuffer
+        );
 
-            simulationShader.SetInt(
-                "obstacleCount",
-                obstacles.Length
-            );
-        }
-        else
-        {
-            simulationShader.SetInt(
-                "obstacleCount",
-                0
-            );
-        }
+        simulationShader.SetInt(
+            "obstacleCount",
+            obstacles.Length
+        );
     }
+
+    void UpdateBlackHoleBuffer()
+    {
+        BlackHole[] sceneBlackHoles = FindObjectsByType<BlackHole>(FindObjectsSortMode.None);
+
+        blackHoles = new BlackHoleData[sceneBlackHoles.Length];
+
+        for (int i = 0; i < sceneBlackHoles.Length; i++)
+        {
+            blackHoles[i].position = sceneBlackHoles[i].transform.position;
+            blackHoles[i].radius = sceneBlackHoles[i].Radius;
+            blackHoles[i].pullRadius = sceneBlackHoles[i].PullRadius;
+            blackHoles[i].strength = sceneBlackHoles[i].Strength;
+        }
+
+        if (blackHoleBuffer != null)
+            blackHoleBuffer.Release();
+
+        blackHoleBuffer = new ComputeBuffer(
+            Mathf.Max(1, blackHoles.Length),
+            Marshal.SizeOf<BlackHoleData>()
+        );
+
+        if (blackHoles.Length > 0)
+            blackHoleBuffer.SetData(blackHoles);
+
+        simulationShader.SetBuffer(
+            kernelIndex,
+            "blackHoles",
+            blackHoleBuffer
+        );
+
+        simulationShader.SetInt(
+            "blackHoleCount",
+            blackHoles.Length
+        );
+    }
+
     public void RemoveParticles(int amount)
     {
         int particlesBeforeDamage = ActiveParticles;
@@ -310,5 +372,6 @@ public class ParticleSimulation : MonoBehaviour
         mouseHistoryBuffer?.Release();
         mouseSpeedHistoryBuffer?.Release();
         obstacleBuffer?.Release();
+        blackHoleBuffer?.Release();
     }
 }
