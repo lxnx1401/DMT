@@ -4,6 +4,8 @@ using UnityEngine;
 [DefaultExecutionOrder(-1000)]
 public class DifficultyManager : MonoBehaviour
 {
+    private static readonly HazardType[] HazardTypes = (HazardType[])Enum.GetValues(typeof(HazardType));
+
     [SerializeField, Range(0f, 1f)] private float minDifficulty = 0.1f;
     [SerializeField, Range(0f, 1f)] private float maxDifficulty = 1f;
     [SerializeField, Min(0f)] private float difficultyStep = 0.08f;
@@ -38,9 +40,7 @@ public class DifficultyManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         ValidateSettings();
-        currentTuning.DeriveFromDifficulty(
-            Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty),
-            CurrentLevelIndex);
+        RederiveAll();
     }
 
     public void EvaluateSection(SectionPerformanceData data)
@@ -48,7 +48,32 @@ public class DifficultyManager : MonoBehaviour
         if (data == null)
             return;
 
-        float struggle = data.OverallStruggleScore;
+        float overallStruggle = data.OverallStruggleScore;
+        float previousGlobal = currentTuning.difficulty;
+        float nextGlobal = StepDifficulty(previousGlobal, overallStruggle);
+        currentTuning.DeriveGlobal(nextGlobal, CurrentLevelIndex);
+
+        foreach (HazardType type in HazardTypes)
+        {
+            float hazardStruggle = data.GetHazardStruggle(type);
+            float previousHazard = currentTuning.GetHazardDifficulty(type);
+            float nextHazard = StepDifficulty(previousHazard, hazardStruggle);
+            currentTuning.DeriveHazard(type, nextHazard, CurrentLevelIndex);
+        }
+
+        Debug.Log(
+            $"Adaptive section {data.sectionIndex}: struggle={overallStruggle:0.00}, " +
+            $"difficulty={previousGlobal:0.00}->{nextGlobal:0.00}, " +
+            $"obstacle={currentTuning.obstacleDifficulty:0.00}, laser={currentTuning.laserDifficulty:0.00}, " +
+            $"blackHole={currentTuning.blackHoleDifficulty:0.00}, time={data.sectionTime:0.0}s, " +
+            $"lost={data.particlesLost}, hits={data.TotalHits}",
+            this);
+
+        OnDifficultyChanged?.Invoke(currentTuning);
+    }
+
+    private float StepDifficulty(float previous, float struggle)
+    {
         float direction = 0f;
 
         if (struggle < targetStruggleMin)
@@ -56,25 +81,31 @@ public class DifficultyManager : MonoBehaviour
         else if (struggle > targetStruggleMax)
             direction = -1f;
 
-        float previous = currentTuning.difficulty;
-        float next = Mathf.Clamp(previous + direction * difficultyStep, minDifficulty, maxDifficulty);
-        currentTuning.DeriveFromDifficulty(next, CurrentLevelIndex);
-
-        Debug.Log(
-            $"Adaptive section {data.sectionIndex}: struggle={struggle:0.00}, " +
-            $"difficulty={previous:0.00}->{next:0.00}, time={data.sectionTime:0.0}s, " +
-            $"lost={data.particlesLost}, hits={data.obstacleHits}",
-            this);
-
-        OnDifficultyChanged?.Invoke(currentTuning);
+        return Mathf.Clamp(previous + direction * difficultyStep, minDifficulty, maxDifficulty);
     }
 
     private void OnValidate()
     {
         ValidateSettings();
-        currentTuning?.DeriveFromDifficulty(
+        RederiveAll();
+    }
+
+    private void RederiveAll()
+    {
+        if (currentTuning == null)
+            return;
+
+        currentTuning.DeriveGlobal(
             Mathf.Clamp(currentTuning.difficulty, minDifficulty, maxDifficulty),
             CurrentLevelIndex);
+
+        foreach (HazardType type in HazardTypes)
+        {
+            currentTuning.DeriveHazard(
+                type,
+                Mathf.Clamp(currentTuning.GetHazardDifficulty(type), minDifficulty, maxDifficulty),
+                CurrentLevelIndex);
+        }
     }
 
     private static int CurrentLevelIndex =>

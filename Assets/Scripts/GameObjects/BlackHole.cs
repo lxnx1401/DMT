@@ -41,7 +41,7 @@ public class BlackHole : MonoBehaviour
             : 1f;
 
         int damage = Mathf.Max(0, Mathf.RoundToInt(baseParticleDamage * multiplier));
-        PerformanceAnalyzer.Instance?.RegisterObstacleHit();
+        PerformanceAnalyzer.Instance?.RegisterObstacleHit(HazardType.BlackHole);
         ParticleSimulation.Instance?.TakeDamage(damage);
     }
 
