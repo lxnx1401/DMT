@@ -152,6 +152,9 @@ public class ParticleSimulation : MonoBehaviour
 
     Vector2 GetMouseWorld()
     {
+        if (Mouse.current == null)
+            return Vector2.zero;
+
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         return Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
     }
@@ -177,6 +180,9 @@ public class ParticleSimulation : MonoBehaviour
 
     void Update()
     {
+        if (Mouse.current == null)
+            return;
+
         float dt = Mathf.Min(Time.deltaTime, 1f / 30f);
 
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
