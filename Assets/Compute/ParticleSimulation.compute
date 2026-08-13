@@ -7,19 +7,21 @@ struct Particle
     float2 offset;
     float damping;
     float forceScale;
-    float alive; // NEU: 1 = lebt, 0 = verschluckt/tot
+    float alive;
 };
 
 RWStructuredBuffer<Particle> particles;
 StructuredBuffer<float2> mouseHistory;
 StructuredBuffer<float> mouseSpeedHistory;
-RWStructuredBuffer<int> killCounter; // NEU: Größe 1, zählt getötete Partikel pro Frame
+RWStructuredBuffer<int> killCounter;      // zählt ALLE Tode dieses Frames (Loch + Schaden)
+RWStructuredBuffer<int> damageCounter;    // NEU: Hilfszähler für Ticket-System, jeden Frame auf 0
 
-uint particleCount;
+uint particleCapacity; // NEU: umbenannt von particleCount -- ist jetzt reine Buffer-Größe, KEIN "wie viele leben"-Zähler mehr
 uint historyCount;
 
 float time;
 float deltaTime;
+int damageRequest; // NEU: wie viele lebende Partikel diesen Frame zusätzlich sterben sollen (aus TakeDamage)
 
 float tangentialStiffness;
 float lateralStiffness;
@@ -38,6 +40,8 @@ float neighborRadius;
 float preferredDistance;
 float cohesionStrength;
 float separationStrength;
+
+float blackHoleStrengthMultiplier;
 
 struct Obstacle
 {
@@ -89,15 +93,31 @@ float2 sampleHistory(float t)
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     uint index = id.x;
-    if (index >= particleCount) return;
+    if (index >= particleCapacity) return; // NEU: reine Buffer-Grenze, keine "aktiv"-Bedeutung mehr
 
     Particle p = particles[index];
 
-    // NEU: tote Partikel komplett überspringen, keine Physik mehr für sie
     if (p.alive < 0.5)
     {
         particles[index] = p;
         return;
+    }
+
+    // NEU: Ticket-basiertes Sterben für generischen Schaden (Bullets/Obstacles).
+    // Jedes lebende Partikel zieht ein Ticket; die ersten "damageRequest" Tickets sterben.
+    // Welches Partikel das trifft ist dadurch nicht vorhersagbar (GPU-Ausführungsreihenfolge) --
+    // das ist hier aber genau richtig: irgendein sichtbares Partikel stirbt, nicht "das letzte im Index".
+    if (damageRequest > 0)
+    {
+        int ticket;
+        InterlockedAdd(damageCounter[0], 1, ticket);
+        if (ticket < damageRequest)
+        {
+            p.alive = 0.0;
+            InterlockedAdd(killCounter[0], 1);
+            particles[index] = p;
+            return;
+        }
     }
 
     float seedA = hash11(index * 12.9898);
@@ -133,13 +153,13 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
     float2 localForce = float2(0.0, 0.0);
     uint neighborCount = 0;
-    for (uint j = 0; j < particleCount; j++)
+    for (uint j = 0; j < particleCapacity; j++)
     {
         if (j == index)
             continue;
 
         Particle neighbor = particles[j];
-        if (neighbor.alive < 0.5) // NEU: tote Nachbarn ignorieren
+        if (neighbor.alive < 0.5)
             continue;
 
         float2 delta = neighbor.position - p.position;
@@ -149,7 +169,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             continue;
 
         float2 dir = delta / dist;
-
         float distanceError = dist - preferredDistance;
 
         localForce += dir * distanceError;
@@ -162,18 +181,11 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     for (uint s = 0; s < substeps; s++)
     {
         float2 diff = target - p.position;
-
         float along = dot(diff, pathDir);
         float across = dot(diff, perp);
 
-        float2 pathForce =
-            (pathDir * along * tangentialStiffness
-            + perp * across * lateralStiffness)
-            * p.forceScale;
-
-        float2 force =
-            pathForce
-            + localForce * cohesionStrength;
+        float2 blackHoleForce = float2(0.0, 0.0);
+        float captureBlend = 0.0;
 
         for (uint bh = 0; bh < blackHoleCount; bh++)
         {
@@ -184,9 +196,23 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             {
                 float2 pullDir = toHole / holeDist;
                 float clampedDist = max(holeDist, hole.radius * 0.5);
-                force += pullDir * hole.strength / (clampedDist * clampedDist);
+                blackHoleForce += pullDir * hole.strength * blackHoleStrengthMultiplier / (clampedDist * clampedDist);
+
+                float t = 1.0 - saturate((holeDist - hole.radius) / (hole.pullRadius - hole.radius));
+                captureBlend = max(captureBlend, t * t);
             }
         }
+
+        float2 pathForce =
+            (pathDir * along * tangentialStiffness
+            + perp * across * lateralStiffness)
+            * p.forceScale
+            * (1.0 - captureBlend);
+
+        float2 force =
+            pathForce
+            + localForce * cohesionStrength
+            + blackHoleForce;
 
         p.velocity += force * subDt;
         p.velocity *= pow(p.damping, subDt * 60.0);
@@ -204,7 +230,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         for (uint i = 0; i < obstacleCount; i++)
         {
             Obstacle o = obstacles[i];
-
             float2 toObstacle = o.position - prevPos;
             float2 moveVec = p.position - prevPos;
             float moveLen = length(moveVec);
@@ -212,7 +237,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
             float proj = clamp(dot(toObstacle, moveDir), 0.0, moveLen);
             float2 closestPoint = prevPos + moveDir * proj;
-
             float2 delta = closestPoint - o.position;
             float dist = length(delta);
 
@@ -229,7 +253,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             }
         }
 
-        // NEU: echtes Verschlucken statt Zurücksetzen
         for (uint h = 0; h < blackHoleCount; h++)
         {
             BlackHole hole = blackHoles[h];
@@ -237,7 +260,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             {
                 p.alive = 0.0;
                 InterlockedAdd(killCounter[0], 1);
-                break; // ein Partikel kann pro Frame nur einmal sterben
+                break;
             }
         }
     }

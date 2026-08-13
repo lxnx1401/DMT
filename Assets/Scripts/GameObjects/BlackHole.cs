@@ -4,8 +4,8 @@ public class BlackHole : MonoBehaviour
 {
     [Header("Attraction")]
     [SerializeField, Min(0.1f)] private float radius = 1f;
-    [SerializeField, Min(0.1f)] private float pullRadius = 6f;
-    [SerializeField, Min(0f)] private float strength = 40f;
+    [SerializeField, Min(0.1f)] private float pullRadius = 12f;
+    [SerializeField, Min(0f)] private float strength = 120f;
 
     [Header("Visual")]
     [SerializeField] private float rotationSpeed = 60f;
@@ -25,29 +25,29 @@ public class BlackHole : MonoBehaviour
         transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
     }
 
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (!other.CompareTag("Player"))
-            return;
+    // private void OnTriggerStay2D(Collider2D other)
+    // {
+    //     if (!other.CompareTag("Player"))
+    //         return;
 
-        tickTimer += Time.deltaTime;
-        if (tickTimer < damageTickInterval)
-            return;
+    //     tickTimer += Time.deltaTime;
+    //     if (tickTimer < damageTickInterval)
+    //         return;
 
-        tickTimer = 0f;
+    //     tickTimer = 0f;
 
-        float multiplier = DifficultyManager.Instance != null
-            ? DifficultyManager.Instance.CurrentTuning.blackHoleDamageMultiplier
-            : 1f;
+    //     float multiplier = DifficultyManager.Instance != null
+    //         ? DifficultyManager.Instance.CurrentTuning.blackHoleDamageMultiplier
+    //         : 1f;
 
-        int damage = Mathf.Max(0, Mathf.RoundToInt(baseParticleDamage * multiplier));
-        PerformanceAnalyzer.Instance?.RegisterObstacleHit(HazardType.BlackHole);
-        ParticleSimulation.Instance?.TakeDamage(damage);
-    }
+    //     int damage = Mathf.Max(0, Mathf.RoundToInt(baseParticleDamage * multiplier));
+    //     PerformanceAnalyzer.Instance?.RegisterObstacleHit(HazardType.BlackHole);
+    //     ParticleSimulation.Instance?.TakeDamage(damage);
+    // }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-            tickTimer = 0f;
-    }
+    // private void OnTriggerExit2D(Collider2D other)
+    // {
+    //     if (other.CompareTag("Player"))
+    //         tickTimer = 0f;
+    // }
 }
