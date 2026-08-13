@@ -99,6 +99,7 @@ public class ParticleSimulation : MonoBehaviour
         baseLateralStiffness = lateralStiffness;
         ActiveParticles = particleCapacity;
         rb = GetComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic;
         ResetMouse();
         PlayerPosition = GetMouseWorld();
         particleBuffer = new ComputeBuffer(particleCapacity, Marshal.SizeOf<Particle>());
@@ -179,6 +180,8 @@ public class ParticleSimulation : MonoBehaviour
         return point;
     }
     private Vector2 lastMouseScreen;
+    private Vector2 smoothedMouseWorld;
+    private float mousePosSmoothing = 25f;
 
     void Update()
     {
@@ -188,6 +191,9 @@ public class ParticleSimulation : MonoBehaviour
         Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
         mouseWorld = ClampToPlayArea(mouseWorld);
 
+        float posSmoothFactor = 1f - Mathf.Exp(-mousePosSmoothing * dt);
+        smoothedMouseWorld = Vector2.Lerp(smoothedMouseWorld, mouseWorld, posSmoothFactor);
+
         // NEU: PlayerPosition wieder aktualisieren
         DifficultyTuning tuning = DifficultyManager.Instance != null
             ? DifficultyManager.Instance.CurrentTuning
@@ -195,10 +201,15 @@ public class ParticleSimulation : MonoBehaviour
         float speedMultiplier = tuning != null ? tuning.playerSpeedMultiplier : 1f;
         PlayerPosition = Vector2.MoveTowards(
             PlayerPosition,
-            mouseWorld,
-            basePlayerSpeed * speedMultiplier * Time.deltaTime);
+            smoothedMouseWorld,
+            basePlayerSpeed * speedMultiplier * dt);
         PlayerPosition = ClampToPlayArea(PlayerPosition);
         HeadPosition = PlayerPosition;
+
+        if (rb != null)
+            rb.position = PlayerPosition;   // direkte Zuweisung statt MovePosition
+        else
+            transform.position = PlayerPosition;
 
         Vector2 rawScreenVelocity = Vector2.zero;
         if (hasLastMouse && dt > 0.0001f)
@@ -225,11 +236,6 @@ public class ParticleSimulation : MonoBehaviour
         }
         mouseHistoryBuffer.SetData(mouseHistory);
         mouseSpeedHistoryBuffer.SetData(mouseSpeedHistory); // NEU
-
-        if (rb != null)
-            rb.MovePosition(PlayerPosition);
-        else
-            transform.position = PlayerPosition;
 
         simulationShader.SetFloat("time", Time.time);
         simulationShader.SetFloat("deltaTime", dt);
