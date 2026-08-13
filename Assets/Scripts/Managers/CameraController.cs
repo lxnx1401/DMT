@@ -14,6 +14,7 @@ public class CameraController : MonoBehaviour
     [SerializeField, Min(1f)] private float minViewSize = 9f;
     [SerializeField, Min(1f)] private float maxViewSize = 17f;
     [SerializeField, Min(0.1f)] private float viewSizeLerpSpeed = 2f;
+    [SerializeField, Range(0.1f, 1f)] private float maxLagFraction = 0.6f; // Anteil der halben Sichthoehe, den die Kamera maximal zurueckbleiben darf
 
     private void Awake()
     {
@@ -23,10 +24,8 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
-        Debug.Log("CAMERA CONTROLLER RUNNING");
         if (player == null)
             return;
-
 
         Vector3 target = new Vector3(
             player.HeadPosition.x + offset.x,
@@ -35,9 +34,23 @@ public class CameraController : MonoBehaviour
         );
 
         float followFactor = 1f - Mathf.Exp(-followSpeed * Time.deltaTime);
+        Vector3 smoothed = Vector3.Lerp(transform.position, target, followFactor);
 
-        transform.position = target;
-        Debug.Log($"CAMERA TARGET {target} / ACTUAL {transform.position}");
+        // Hartes Nachzieh-Limit zusaetzlich zum Lerp: bei sehr hoher adaptiver Geschwindigkeit
+        // (playerSpeedMultiplier kann bei hoher Intensitaet weit uebet 1 liegen) wuerde reines
+        // Lerp irgendwann hinterherhinken und der Spieler koennte aus dem Bild laufen. Der Cap
+        // richtet sich nach der AKTUELLEN Sichtgroesse (nicht der maximalen), damit die Grenze
+        // auch waehrend des Zoom-Lerps von UpdateViewDistance() konsistent bleibt.
+        float currentHalfView = targetCamera != null && targetCamera.orthographic
+            ? targetCamera.orthographicSize
+            : maxViewSize;
+        float maxLag = currentHalfView * maxLagFraction;
+
+        Vector3 lagVector = smoothed - target;
+        if (lagVector.sqrMagnitude > maxLag * maxLag)
+            smoothed = target + lagVector.normalized * maxLag;
+
+        transform.position = smoothed;
 
         UpdateViewDistance();
     }
