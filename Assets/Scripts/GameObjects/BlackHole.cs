@@ -25,6 +25,10 @@ public class BlackHole : MonoBehaviour
         transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
     }
 
+    // Absichtlich deaktiviert: Schaden entsteht bereits dadurch, dass Partikel im Compute Shader
+    // beim Erreichen des Kernradius wirklich sterben (p.alive = 0, siehe ParticleSimulation.compute)
+    // und das ueber aliveCounter/ActiveParticles zaehlt -- ein zusaetzlicher Tick-Schaden waehrend
+    // des Aufenthalts im Trigger wuerde denselben Effekt doppelt bestrafen.
     // private void OnTriggerStay2D(Collider2D other)
     // {
     //     if (!other.CompareTag("Player"))
