@@ -3,21 +3,19 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
-   public void StartGame(string gameplaySceneName)
-{
-    Time.timeScale = 1f;
-
-    PlayerPrefs.DeleteAll(); 
-
-    if (LevelManager.Instance != null)
+    public void StartGame(string gameplaySceneName)
     {
-        LevelManager.Instance.IsEndlessMode = false; 
-        LevelManager.Instance.TrySelectLevel(0);  
-    }
+        Time.timeScale = 1f;
 
-    GameManager.Instance?.StartNewGame();
-    SceneManager.LoadScene(gameplaySceneName);
-}
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.ResetProgress();
+            LevelManager.Instance.IsEndlessMode = false;
+        }
+
+        GameManager.Instance?.StartNewGame();
+        SceneManager.LoadScene(gameplaySceneName);
+    }
 
     public void ContinueGame(string gameplaySceneName)
     {

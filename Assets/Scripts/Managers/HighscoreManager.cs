@@ -34,4 +34,15 @@ public static class HighscoreManager
         PlayerPrefs.Save();
         return true;
     }
+
+    // Löscht nur die eigenen Keys (Level-Highscores + Endlos-Highscore), nicht ALLE PlayerPrefs -
+    // andere Einstellungen (z.B. Audio) sollen von einem Highscore-Reset unberührt bleiben.
+    public static void ResetAll(int levelCount)
+    {
+        for (int i = 0; i < levelCount; i++)
+            PlayerPrefs.DeleteKey(KeyPrefix + i);
+
+        PlayerPrefs.DeleteKey(EndlessKey);
+        PlayerPrefs.Save();
+    }
 }

@@ -37,6 +37,14 @@ public class DifficultyTuning
     private const float MaxIntensity = 60f;
     private const float SafeClearance = 6f;
 
+    // Speed/Kohäsion duerfen die Steuerbarkeit nie komplett zerstoeren - anders als Schaden-/
+    // Spawn-Multiplikatoren (die bewusst bis MaxIntensity eskalieren, siehe "Level 15 = Oneshot")
+    // bekommen sie einen deutlich niedrigeren Intensitaets-Deckel. Ohne den kollabiert
+    // swarmCohesionMultiplier bei hoher Difficulty+Distanz auf den 0.05-Floor, waehrend
+    // playerSpeedMultiplier gleichzeitig auf >20x hochschiesst - der Schwarm wird dann nicht nur
+    // schwerer, sondern buchstaeblich unsteuerbar, weit draussen im Endlos-Modus.
+    private const float ControlIntensityCap = 4f;
+
     public static float ComputeIntensity(int levelIndex) =>
         Mathf.Min(MaxIntensity, 1f + Mathf.Max(0, levelIndex - IntensityStartLevelIndex) * IntensityGrowthPerLevel);
 
@@ -44,9 +52,10 @@ public class DifficultyTuning
     {
         difficulty = Mathf.Clamp01(value);
         float intensity = ComputeIntensity(levelIndex);
+        float controlIntensity = Mathf.Min(ControlIntensityCap, intensity);
 
-        playerSpeedMultiplier = ScaleMultiplier(Mathf.Lerp(0.85f, 1.35f, difficulty), intensity, 0.75f, 1.5f);
-        swarmCohesionMultiplier = ScaleMultiplier(Mathf.Lerp(1.25f, 0.8f, difficulty), intensity, 0.75f, 1.4f);
+        playerSpeedMultiplier = ScaleMultiplier(Mathf.Lerp(0.85f, 1.35f, difficulty), controlIntensity, 0.75f, 1.5f);
+        swarmCohesionMultiplier = ScaleMultiplier(Mathf.Lerp(1.25f, 0.8f, difficulty), controlIntensity, 0.75f, 1.4f);
         coinObstacleClearance = ScaleClearance(Mathf.Lerp(SafeClearance, 1f, difficulty), intensity);
     }
 

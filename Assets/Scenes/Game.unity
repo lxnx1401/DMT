@@ -3095,7 +3095,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 671461672}
-        m_TargetAssemblyTypeName: LevelManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
         m_MethodName: RestartLevel
         m_Mode: 1
         m_Arguments:
@@ -3809,7 +3809,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1535919410}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 671461672}
+        m_TargetAssemblyTypeName: SceneLoader, APS.Runtime
+        m_MethodName: RestartLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1535919410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4578,6 +4590,7 @@ MonoBehaviour:
   substeps: 2
   maxSpeed: 75
   mouseVelSmoothing: 0.15
+  mousePosSmoothing: 25
 --- !u!50 &1804985958
 Rigidbody2D:
   serializedVersion: 5
