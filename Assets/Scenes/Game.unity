@@ -340,6 +340,9 @@ MonoBehaviour:
   scoreText: {fileID: 1011258985}
   highscoreText: {fileID: 0}
   lostImage: {fileID: 1112622777}
+  completedTitle: {fileID: 977840755}
+  backToMenuButton: {fileID: 1336662707}
+  scoreLabel: {fileID: 528277006}
   animationDuration: 0.6
   restartButton: {fileID: 1191977911}
   nextButton: {fileID: 658883400}
@@ -1297,156 +1300,6 @@ MonoBehaviour:
   minimumLaserSpacing: 8
   playerStartClearance: 8
   candidatesPerLaser: 40
---- !u!1 &9666777888999111
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9777888999111222}
-  - component: {fileID: 9888999111222333}
-  m_Layer: 0
-  m_Name: BlackHoleSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &9777888999111222
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9666777888999111}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 106093544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9888999111222333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9666777888999111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2c3d4e5f6a748901b2c3d4e5f67890a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BlackHoleSpawner
-  blackHolePrefab: {fileID: 9111222333444555, guid: bbecd701e0a14ed7b4f8d0d80ebeab3a, type: 3}
-  additionalBoundaryPadding: 1
-  minimumBlackHoleSpacing: 10
-  playerStartClearance: 10
-  candidatesPerBlackHole: 40
---- !u!1 &5111666777888999
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5222666777888999}
-  - component: {fileID: 5333666777888999}
-  m_Layer: 0
-  m_Name: RangedEnemySpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5222666777888999
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5111666777888999}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 106093544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5333666777888999
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5111666777888999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c62478772764bbd89c82d17e4447ee6, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::RangedEnemySpawner
-  rangedEnemyPrefab: {fileID: 4111555666777888, guid: 51e8371f5faa488c86ca5d2e2a0f07e7, type: 3}
-  additionalBoundaryPadding: 1
-  minimumSpacing: 10
-  playerStartClearance: 9
-  candidatesPerEnemy: 40
---- !u!1 &1122334455667788
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1122334455667789}
-  - component: {fileID: 1122334455667790}
-  m_Layer: 0
-  m_Name: EndlessWorldController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1122334455667789
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122334455667788}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 106093544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1122334455667790
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122334455667788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6d8f9a1b2e34c5d8f9a1b2e34c5d8f9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::EndlessWorldController
-  obstaclePrefab: {fileID: 83671163285043792, guid: 3a8108c4eaa8b654da47a8528a7d8659, type: 3}
-  crownPrefab: {fileID: 7893658628646874407, guid: a7053ae76e42cb941beed2d207c675cf, type: 3}
-  laserPrefab: {fileID: 7106282452165013043, guid: 8ddfeb0dcdcff4adc86962de6d93930a, type: 3}
-  blackHolePrefab: {fileID: 9111222333444555, guid: bbecd701e0a14ed7b4f8d0d80ebeab3a, type: 3}
-  rangedEnemyPrefab: {fileID: 4111555666777888, guid: 51e8371f5faa488c86ca5d2e2a0f07e7, type: 3}
-  tileSize: 40
-  activeRadius: 1
-  unloadRadius: 2
 --- !u!1 &571697792
 GameObject:
   m_ObjectHideFlags: 0
@@ -3444,6 +3297,10 @@ MonoBehaviour:
   player: {fileID: 1804985957}
   followSpeed: 30
   offset: {x: 0, y: 0}
+  targetCamera: {fileID: 0}
+  minViewSize: 9
+  maxViewSize: 17
+  viewSizeLerpSpeed: 2
 --- !u!1 &1291412663
 GameObject:
   m_ObjectHideFlags: 0
@@ -4707,6 +4564,7 @@ MonoBehaviour:
   particleCapacity: 1000
   trailHistoryLength: 48
   trailDuration: 0.35
+  boundaryMargin: 3
   tangentialStiffness: 400
   lateralStiffness: 400
   trailWidth: 0.7
@@ -4965,6 +4823,158 @@ Transform:
   - {fileID: 756967939}
   m_Father: {fileID: 1619777361}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1122334455667788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1122334455667789}
+  - component: {fileID: 1122334455667790}
+  m_Layer: 0
+  m_Name: EndlessWorldController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1122334455667789
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122334455667788}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 106093544}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1122334455667790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122334455667788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6d8f9a1b2e34c5d8f9a1b2e34c5d8f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EndlessWorldController
+  obstaclePrefab: {fileID: 83671163285043792, guid: 3a8108c4eaa8b654da47a8528a7d8659, type: 3}
+  crownPrefab: {fileID: 7893658628646874407, guid: a7053ae76e42cb941beed2d207c675cf, type: 3}
+  laserPrefab: {fileID: 7106282452165013043, guid: 8ddfeb0dcdcff4adc86962de6d93930a, type: 3}
+  blackHolePrefab: {fileID: 9111222333444555, guid: bbecd701e0a14ed7b4f8d0d80ebeab3a, type: 3}
+  rangedEnemyPrefab: {fileID: 4111555666777888, guid: 51e8371f5faa488c86ca5d2e2a0f07e7, type: 3}
+  tileSize: 40
+  activeRadius: 1
+  unloadRadius: 2
+  baseCrownsPerTile: 2
+  baseObstaclesPerTile: 1
+--- !u!1 &5111666777888999
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5222666777888999}
+  - component: {fileID: 5333666777888999}
+  m_Layer: 0
+  m_Name: RangedEnemySpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5222666777888999
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111666777888999}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 106093544}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5333666777888999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111666777888999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c62478772764bbd89c82d17e4447ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RangedEnemySpawner
+  rangedEnemyPrefab: {fileID: 4111555666777888, guid: 51e8371f5faa488c86ca5d2e2a0f07e7, type: 3}
+  additionalBoundaryPadding: 1
+  minimumSpacing: 10
+  playerStartClearance: 9
+  candidatesPerEnemy: 40
+--- !u!1 &9666777888999111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9777888999111222}
+  - component: {fileID: 9888999111222333}
+  m_Layer: 0
+  m_Name: BlackHoleSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9777888999111222
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9666777888999111}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 106093544}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9888999111222333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9666777888999111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2c3d4e5f6a748901b2c3d4e5f67890a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlackHoleSpawner
+  blackHolePrefab: {fileID: 9111222333444555, guid: bbecd701e0a14ed7b4f8d0d80ebeab3a, type: 3}
+  additionalBoundaryPadding: 1
+  minimumBlackHoleSpacing: 10
+  playerStartClearance: 10
+  candidatesPerBlackHole: 40
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

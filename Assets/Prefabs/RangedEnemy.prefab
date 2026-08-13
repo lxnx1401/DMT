@@ -35,6 +35,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4333555666777888
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -81,8 +82,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 470362b6926180f49836b57937a3c092, type: 3}
-  m_Color: {r: 0.6, g: 0.25, b: 0.05, a: 1}
+  m_Sprite: {fileID: 2173504857357665408, guid: 07b9746691d49014bb07249ab0ef7533, type: 3}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -101,7 +102,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3cd6c4ee5fc44abb81a4bf5e25013037, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemy
   projectilePrefab: {fileID: 3111444555666777, guid: bde83f9ebac84e769eaf1b72b4f721ce, type: 3}
   projectileSpawnOffset: 0.6
