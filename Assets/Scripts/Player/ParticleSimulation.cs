@@ -68,7 +68,7 @@ public class ParticleSimulation : MonoBehaviour
     private ComputeBuffer mouseSpeedHistoryBuffer;
     private ComputeBuffer obstacleBuffer;
     private ComputeBuffer blackHoleBuffer;
-    private ComputeBuffer killCounterBuffer;
+    private ComputeBuffer aliveCounterBuffer;
     private ComputeBuffer damageCounterBuffer;
 
     private ObstacleData[] obstacles;
@@ -146,9 +146,9 @@ public class ParticleSimulation : MonoBehaviour
         mouseSpeedHistoryBuffer = new ComputeBuffer(trailHistoryLength, sizeof(float));
         mouseSpeedHistoryBuffer.SetData(mouseSpeedHistory);
 
-        // --- Kill-/Damage-Counter (je nur EINMAL angelegt) ---
-        killCounterBuffer = new ComputeBuffer(1, sizeof(int));
-        killCounterBuffer.SetData(zeroReset);
+        // --- Alive-/Damage-Counter (je nur EINMAL angelegt) ---
+        aliveCounterBuffer = new ComputeBuffer(1, sizeof(int));
+        aliveCounterBuffer.SetData(zeroReset);
 
         damageCounterBuffer = new ComputeBuffer(1, sizeof(int));
         damageCounterBuffer.SetData(zeroReset);
@@ -161,7 +161,7 @@ public class ParticleSimulation : MonoBehaviour
         simulationShader.SetBuffer(kernelIndex, "particles", particleBuffer);
         simulationShader.SetBuffer(kernelIndex, "mouseHistory", mouseHistoryBuffer);
         simulationShader.SetBuffer(kernelIndex, "mouseSpeedHistory", mouseSpeedHistoryBuffer);
-        simulationShader.SetBuffer(kernelIndex, "killCounter", killCounterBuffer);
+        simulationShader.SetBuffer(kernelIndex, "aliveCounter", aliveCounterBuffer);
         simulationShader.SetBuffer(kernelIndex, "damageCounter", damageCounterBuffer);
 
         simulationShader.SetInt("particleCapacity", particleCapacity);
@@ -287,7 +287,7 @@ public class ParticleSimulation : MonoBehaviour
         damageCounterBuffer.SetData(zeroReset);
         pendingDamage = 0;
 
-        killCounterBuffer.SetData(zeroReset);
+        aliveCounterBuffer.SetData(zeroReset);
 
         // WICHTIG: Dispatch + Readback + Draw laufen jeweils nur EINMAL pro Frame.
         simulationShader.Dispatch(kernelIndex, Mathf.CeilToInt(particleCapacity / 256f), 1, 1);
@@ -296,7 +296,7 @@ public class ParticleSimulation : MonoBehaviour
         if (!readbackInFlight)
         {
             readbackInFlight = true;
-            AsyncGPUReadback.Request(killCounterBuffer, OnKillCounterReadback);
+            AsyncGPUReadback.Request(aliveCounterBuffer, OnAliveCounterReadback);
         }
 
         particleMaterial.SetBuffer("particles", particleBuffer);
@@ -391,7 +391,7 @@ public class ParticleSimulation : MonoBehaviour
         UpdateBlackHoleBuffer();
     }
 
-    private void OnKillCounterReadback(AsyncGPUReadbackRequest request)
+    private void OnAliveCounterReadback(AsyncGPUReadbackRequest request)
     {
         readbackInFlight = false;
         if (request.hasError)
@@ -400,23 +400,29 @@ public class ParticleSimulation : MonoBehaviour
             return;
         }
 
-        int killedThisFrame = request.GetData<int>()[0];
-        Debug.Log($"[ParticleSimulation] killedThisFrame={killedThisFrame}, ActiveParticles vorher={ActiveParticles}");
-        if (killedThisFrame > 0)
-        {
-            RemoveParticles(killedThisFrame);
-        }
+        int aliveNow = Mathf.Clamp(request.GetData<int>()[0], 0, particleCapacity);
+        ApplyAliveCount(aliveNow);
     }
 
-    public void RemoveParticles(int amount)
+    // Uebernimmt die vom GPU gemeldete, absolute Zahl noch lebender Partikel -- bewusst absolut statt
+    // als aufsummiertes Delta, damit ein wegen readbackInFlight uebersprungenes Readback sich beim
+    // naechsten erfolgreichen Readback von selbst korrigiert, statt Tode dauerhaft zu verlieren
+    // (das fuehrte vorher dazu, dass der Schwarm optisch laengst tot war, ActiveParticles aber nie 0 erreichte).
+    private void ApplyAliveCount(int aliveNow)
     {
         int particlesBeforeDamage = ActiveParticles;
-        int actualLoss = Mathf.Min(ActiveParticles, Mathf.Max(0, amount));
-        ActiveParticles -= actualLoss;
+        if (aliveNow >= particlesBeforeDamage)
+        {
+            ActiveParticles = aliveNow;
+            return;
+        }
+
+        int lost = particlesBeforeDamage - aliveNow;
+        ActiveParticles = aliveNow;
 
         // ActiveParticles ist reine Buchhaltung fürs UI/Score -- beeinflusst weder
         // Dispatch noch Draw (siehe Update(): particleCapacity wird immer voll genutzt).
-        PerformanceAnalyzer.Instance?.RegisterParticleLoss(actualLoss);
+        PerformanceAnalyzer.Instance?.RegisterParticleLoss(lost);
 
         if (particlesBeforeDamage > 0 && ActiveParticles == 0)
         {
@@ -439,7 +445,7 @@ public class ParticleSimulation : MonoBehaviour
         mouseSpeedHistoryBuffer?.Release();
         obstacleBuffer?.Release();
         blackHoleBuffer?.Release();
-        killCounterBuffer?.Release();
+        aliveCounterBuffer?.Release();
         damageCounterBuffer?.Release();
     }
 }
