@@ -287,6 +287,15 @@ public class ParticleSimulation : MonoBehaviour
         particleMaterial.SetColor("_TintColor", Color.white);
     }
 
+    // Wird von EndlessWorldController nach jedem Kachel-Refresh aufgerufen, damit neu gespawnte
+    // Hindernisse/Black Holes auch in der GPU-Kollision/-Anziehung berücksichtigt werden - im
+    // Level-Modus reicht der einmalige Aufruf in Start(), weil dort schon alles vorab spawnt.
+    public void RefreshHazardBuffers()
+    {
+        UpdateObstacleBuffer();
+        UpdateBlackHoleBuffer();
+    }
+
     void UpdateObstacleBuffer()
     {
         Obstacle[] sceneObstacles = FindObjectsByType<Obstacle>(FindObjectsSortMode.None);

@@ -111,14 +111,18 @@ public class EndlessWorldController : MonoBehaviour
             toRemove.Add(entry.Key);
         }
 
-        if (toRemove == null)
-            return;
-
-        foreach (Vector2Int coord in toRemove)
+        if (toRemove != null)
         {
-            Destroy(activeTiles[coord].Container.gameObject);
-            activeTiles.Remove(coord);
+            foreach (Vector2Int coord in toRemove)
+            {
+                Destroy(activeTiles[coord].Container.gameObject);
+                activeTiles.Remove(coord);
+            }
         }
+
+        // Neu gespawnte/entladene Hindernisse und Black Holes müssen auch der GPU-Partikel-
+        // simulation bekannt gemacht werden, sonst "sieht" der Schwarm sie nie.
+        ParticleSimulation.Instance?.RefreshHazardBuffers();
     }
 
     private void SpawnTile(Vector2Int coord)
