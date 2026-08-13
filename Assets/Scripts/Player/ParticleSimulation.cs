@@ -48,7 +48,10 @@ public class ParticleSimulation : MonoBehaviour
     public int ActiveParticles => aliveTracker.ActiveParticles;
     public int MaxParticles => particleCapacity;
     public Vector2 HeadPosition => PlayerPosition;
-    public Vector2 PlayerPosition => motion.PlayerPosition;
+    // Hindernis-/Gegner-Spawner laufen absichtlich VOR ParticleSimulation.Start() (siehe deren
+    // negative DefaultExecutionOrder) und fragen PlayerPosition schon vor dessen Initialisierung ab --
+    // motion ist bis dahin noch null, daher hier defensiv statt eines NullReferenceException-Absturzes.
+    public Vector2 PlayerPosition => motion != null ? motion.PlayerPosition : Vector2.zero;
 
     public static ParticleSimulation Instance;
 
