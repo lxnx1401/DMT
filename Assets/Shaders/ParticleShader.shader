@@ -31,7 +31,9 @@ Shader "Custom/ParticleShader"
 
             float _ParticleRadius;
             float4 _TintColor;
-
+            float4 _FlashColor;
+            float _FlashAmount;
+            float _FlashBrightness;
             float _StartHue;
 
             struct Varyings
@@ -97,11 +99,15 @@ Shader "Custom/ParticleShader"
 
                 // Hue läuft kontinuierlich von 0 -> 1 und beginnt danach wieder von vorne.
                 float hue = _StartHue;
-
                 float3 rainbowColor = HueToRGB(hue);
 
-                // _TintColor beeinflusst weiterhin Helligkeit/Alpha.
-                float3 finalColor = rainbowColor * _TintColor.rgb;
+                float3 flashColor = _FlashColor.rgb * _FlashBrightness;
+
+                float3 finalColor = lerp(
+                    rainbowColor,
+                    flashColor,
+                    _FlashAmount
+                );
 
                 return float4(
                     finalColor,

@@ -4,7 +4,7 @@ public class CameraController : MonoBehaviour
 {
     public ParticleSimulation player;
 
-    public float followSpeed = 5f;
+    public float followSpeed = 30f;
 
     [Header("Offset")]
     public Vector2 offset = Vector2.zero;
@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
+        Debug.Log("CAMERA CONTROLLER RUNNING");
         if (player == null)
             return;
 
@@ -33,12 +34,10 @@ public class CameraController : MonoBehaviour
             transform.position.z
         );
 
+        float followFactor = 1f - Mathf.Exp(-followSpeed * Time.deltaTime);
 
-        transform.position = Vector3.Lerp(
-            transform.position,
-            target,
-            followSpeed * Time.deltaTime
-        );
+        transform.position = target;
+        Debug.Log($"CAMERA TARGET {target} / ACTUAL {transform.position}");
 
         UpdateViewDistance();
     }
