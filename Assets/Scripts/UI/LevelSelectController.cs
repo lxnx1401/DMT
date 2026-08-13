@@ -12,13 +12,16 @@ public class LevelSelectController : MonoBehaviour
 
     private void OnEnable()
     {
-        SetupEndlessButton(); 
+        UpdateEndlessButtonLabel();
         Populate();
     }
 
-    private void SetupEndlessButton()
+    // Nur das Label wird automatisch aktualisiert - der Klick-Handler wird bewusst NICHT hier
+    // verdrahtet, sondern über OnClick() im Inspector auf SelectEndless() gesetzt.
+    private void UpdateEndlessButtonLabel()
     {
-        if (endlessButton == null) return;
+        if (endlessButton == null)
+            return;
 
         TMP_Text label = endlessButton.GetComponentInChildren<TMP_Text>(true);
         if (label != null)
@@ -26,9 +29,6 @@ public class LevelSelectController : MonoBehaviour
             int highscore = HighscoreManager.GetEndlessHighscore();
             label.text = $"Endless   Best: {highscore:000}";
         }
-
-        endlessButton.onClick.RemoveAllListeners();
-        endlessButton.onClick.AddListener(SelectEndless);
     }
 
     private void Populate()
@@ -68,7 +68,7 @@ public class LevelSelectController : MonoBehaviour
         SceneManager.LoadScene(gameplaySceneName);
     }
 
-    private void SelectEndless()
+    public void SelectEndless()
     {
         if (LevelManager.Instance == null)
             return;
