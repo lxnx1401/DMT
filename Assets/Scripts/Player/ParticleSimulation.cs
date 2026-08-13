@@ -98,6 +98,8 @@ public class ParticleSimulation : MonoBehaviour
     public Vector2 PlayerPosition { get; private set; }
     private Rigidbody2D rb;
 
+    private float currentHue;
+
     public static ParticleSimulation Instance;
 
     void Awake()
@@ -231,12 +233,27 @@ public class ParticleSimulation : MonoBehaviour
         simulationShader.SetFloat("blackHoleStrengthMultiplier", blackHoleMultiplier);
 
         float speedMultiplier = tuning != null ? tuning.playerSpeedMultiplier : 1f;
+        Vector2 previousPlayerPosition = PlayerPosition;
         PlayerPosition = Vector2.MoveTowards(
             PlayerPosition,
             smoothedMouseWorld,
             basePlayerSpeed * speedMultiplier * dt);
         PlayerPosition = ClampToPlayArea(PlayerPosition);
         HeadPosition = PlayerPosition;
+
+        float hueShiftSpeed = 0.015f;
+
+        float playerSpeed = 0f;
+        if (dt > 0.0001f)
+        {
+            playerSpeed = Vector2.Distance(previousPlayerPosition, PlayerPosition) / dt;
+        }
+        currentHue = Mathf.Repeat(
+            currentHue + playerSpeed * hueShiftSpeed * dt,
+            1f
+        );
+
+        particleMaterial.SetFloat("_StartHue", currentHue);
 
         if (rb != null)
             rb.position = PlayerPosition;
