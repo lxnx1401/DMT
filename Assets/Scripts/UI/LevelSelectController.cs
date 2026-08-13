@@ -7,11 +7,28 @@ public class LevelSelectController : MonoBehaviour
 {
     [SerializeField] private RectTransform buttonContainer;
     [SerializeField] private Button levelButtonPrefab;
+    [SerializeField] private Button endlessButton; 
     [SerializeField] private string gameplaySceneName = "Game";
 
     private void OnEnable()
     {
+        UpdateEndlessButtonLabel();
         Populate();
+    }
+
+    // Nur das Label wird automatisch aktualisiert - der Klick-Handler wird bewusst NICHT hier
+    // verdrahtet, sondern über OnClick() im Inspector auf SelectEndless() gesetzt.
+    private void UpdateEndlessButtonLabel()
+    {
+        if (endlessButton == null)
+            return;
+
+        TMP_Text label = endlessButton.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+        {
+            int highscore = HighscoreManager.GetEndlessHighscore();
+            label.text = $"Endless   Best: {highscore:000}";
+        }
     }
 
     private void Populate()
@@ -21,6 +38,7 @@ public class LevelSelectController : MonoBehaviour
 
         foreach (Transform child in buttonContainer)
             Destroy(child.gameObject);
+
 
         int unlockedCount = LevelManager.Instance.UnlockedLevelCount;
         for (int levelIndex = 0; levelIndex < unlockedCount; levelIndex++)
@@ -44,6 +62,18 @@ public class LevelSelectController : MonoBehaviour
         if (LevelManager.Instance == null || !LevelManager.Instance.TrySelectLevel(levelIndex))
             return;
 
+        LevelManager.Instance.IsEndlessMode = false;
+        Time.timeScale = 1f;
+        GameManager.Instance?.StartNewGame();
+        SceneManager.LoadScene(gameplaySceneName);
+    }
+
+    public void SelectEndless()
+    {
+        if (LevelManager.Instance == null)
+            return;
+
+        LevelManager.Instance.IsEndlessMode = true;
         Time.timeScale = 1f;
         GameManager.Instance?.StartNewGame();
         SceneManager.LoadScene(gameplaySceneName);

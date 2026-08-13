@@ -16,19 +16,38 @@ public class CrownSpawner : MonoBehaviour
 
     private IEnumerator Start()
     {
+        if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode)
+            yield break;
+
         // Obstacles must exist before crown positions can be validated.
         yield return null;
 
-        LevelData level = LevelManager.Instance?.CurrentLevel;
+        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
+        SpawnFor(LevelManager.Instance?.CurrentLevel, levelIndex);
+    }
+
+    public void ClearSpawned()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            Destroy(transform.GetChild(i).gameObject);
+
+        Amount = 0;
+    }
+
+    // Setzt voraus, dass Obstacles zu diesem Zeitpunkt bereits existieren (im Endlos-Modus:
+    // Aufrufer muss ObstacleSpawner.SpawnFor() vorher aufrufen; im Level-Modus regelt das
+    // die Frame-Verzögerung in Start()).
+    public void SpawnFor(LevelData level, int seedIndex)
+    {
         if (level == null || crownPrefab == null)
         {
             Debug.LogWarning("CrownSpawner requires level data and a crown prefab.", this);
-            yield break;
+            return;
         }
 
         Amount = Mathf.Max(0, level.crownAmount);
         if (Amount == 0)
-            yield break;
+            return;
 
         Obstacle[] obstacles = FindObjectsByType<Obstacle>(FindObjectsSortMode.None);
         float desiredObstacleClearance = DifficultyManager.Instance != null
@@ -37,21 +56,21 @@ public class CrownSpawner : MonoBehaviour
         float crownRadius = GetCrownRadius();
         Bounds bounds = GetSpawnBounds(level.PlayAreaBounds, crownRadius);
 
-        SpawnCrowns(bounds, obstacles, crownRadius, desiredObstacleClearance);
+        SpawnCrowns(bounds, obstacles, crownRadius, desiredObstacleClearance, seedIndex);
     }
 
     private void SpawnCrowns(
         Bounds bounds,
         Obstacle[] obstacles,
         float crownRadius,
-        float desiredObstacleClearance)
+        float desiredObstacleClearance,
+        int seedIndex)
     {
         List<Vector2> positions = new List<Vector2>(Amount);
         Vector2 playerStart = ParticleSimulation.Instance != null
             ? ParticleSimulation.Instance.PlayerPosition
             : Vector2.zero;
-        int levelIndex = LevelManager.Instance != null ? LevelManager.Instance.currentLevel : 0;
-        int seed = 947 + levelIndex * 3571 + Mathf.RoundToInt(
+        int seed = 947 + seedIndex * 3571 + Mathf.RoundToInt(
             (DifficultyManager.Instance?.CurrentTuning.difficulty ?? 0.5f) * 100f);
         System.Random random = new System.Random(seed);
 
@@ -74,7 +93,7 @@ public class CrownSpawner : MonoBehaviour
             }
 
             positions.Add(position);
-            Instantiate(crownPrefab, position, Quaternion.identity);
+            Instantiate(crownPrefab, position, Quaternion.identity, transform);
         }
 
         Amount = positions.Count;

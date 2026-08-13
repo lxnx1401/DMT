@@ -17,7 +17,7 @@ public class Obstacle : MonoBehaviour
             : 1f;
 
         int damage = Mathf.Max(0, Mathf.RoundToInt(baseParticleDamage * multiplier));
-        PerformanceAnalyzer.Instance?.RegisterObstacleHit();
+        PerformanceAnalyzer.Instance?.RegisterObstacleHit(HazardType.Obstacle);
         ParticleSimulation.Instance?.TakeDamage(damage);
     }
 }

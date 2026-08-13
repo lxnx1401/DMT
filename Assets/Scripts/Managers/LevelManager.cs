@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance { get; private set; }
 
     public int currentLevel = 0;
+    public bool IsEndlessMode { get; set; }
 
     private readonly Dictionary<int, LevelData> generatedLevels = new Dictionary<int, LevelData>();
 
@@ -74,6 +75,17 @@ public class LevelManager : MonoBehaviour
 
     public void ResetToFirstLevel()
     {
+        currentLevel = 0;
+    }
+
+    // Kompletter Neustart: alle Level-/Endlos-Highscores und der Freischalt-Fortschritt werden
+    // gelöscht, danach ist wieder nur Level 1 freigeschaltet. Rührt bewusst keine anderen
+    // PlayerPrefs an (z.B. Audio-Einstellungen), im Gegensatz zu einem pauschalen DeleteAll().
+    public void ResetProgress()
+    {
+        HighscoreManager.ResetAll(UnlockedLevelCount);
+        PlayerPrefs.DeleteKey(UnlockedLevelsKey);
+        PlayerPrefs.Save();
         currentLevel = 0;
     }
 

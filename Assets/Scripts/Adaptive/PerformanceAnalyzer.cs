@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [DefaultExecutionOrder(-900)]
@@ -11,7 +12,7 @@ public class PerformanceAnalyzer : MonoBehaviour
     private int sectionIndex;
     private int particlesAtStart;
     private int reportedParticleLoss;
-    private int obstacleHits;
+    private readonly Dictionary<HazardType, int> hitsByType = new Dictionary<HazardType, int>();
     private float sectionStartTime;
 
     private void Awake()
@@ -35,7 +36,7 @@ public class PerformanceAnalyzer : MonoBehaviour
     {
         particlesAtStart = Mathf.Max(0, currentParticleCount);
         reportedParticleLoss = 0;
-        obstacleHits = 0;
+        hitsByType.Clear();
         sectionStartTime = Time.time;
         IsSectionActive = true;
     }
@@ -58,17 +59,20 @@ public class PerformanceAnalyzer : MonoBehaviour
             particlesAtStart = particlesAtStart,
             particlesAtEnd = particlesAtEnd,
             particlesLost = Mathf.Max(measuredLoss, reportedParticleLoss),
-            obstacleHits = obstacleHits
+            hitsByType = new Dictionary<HazardType, int>(hitsByType)
         };
 
         IsSectionActive = false;
         DifficultyManager.Instance?.EvaluateSection(data);
     }
 
-    public void RegisterObstacleHit()
+    public void RegisterObstacleHit(HazardType type)
     {
-        if (IsSectionActive)
-            obstacleHits++;
+        if (!IsSectionActive)
+            return;
+
+        hitsByType.TryGetValue(type, out int count);
+        hitsByType[type] = count + 1;
     }
 
     public void RegisterParticleLoss(int amount)

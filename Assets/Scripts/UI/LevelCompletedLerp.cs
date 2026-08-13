@@ -17,10 +17,9 @@ public class LevelCompletedLerp : MonoBehaviour
     [SerializeField] private TMP_Text highscoreText;
 
     [SerializeField] private GameObject lostImage;
-
-    private GameObject completedTitle;
-    private GameObject backToMenuButton;
-    private GameObject scoreLabel;
+    [SerializeField] private GameObject completedTitle;
+    [SerializeField] private GameObject backToMenuButton;
+    [SerializeField] private GameObject scoreLabel;
 
     [Header("Animationseinstellungen")]
     [SerializeField] private float animationDuration = 0.4f;
@@ -35,11 +34,11 @@ public class LevelCompletedLerp : MonoBehaviour
     [SerializeField] private Button restartButton;
     [SerializeField] private Button nextButton;
 
+    [Header("Audio Einstellungen")]
+    [SerializeField] private GameObject musicGameObject;
 
     void Awake()
     {
-        ResolveReferences();
-
         if (levelCompletedPanel != null)
         {
             customOpenedPos = levelCompletedPanel.anchoredPosition.x;
@@ -60,16 +59,14 @@ public class LevelCompletedLerp : MonoBehaviour
             nextButton.onClick.AddListener(LoadNextLevel);
     }
 
+#if UNITY_EDITOR
+    // Debug-Shortcut zum schnellen Testen des Completed-Screens - läuft nie in einem Build.
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
-        {
-            if (!isLevelCompleted)
-            {
-                TriggerLevelCompleted();
-            }
-        }
+        if (Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame && !isLevelCompleted)
+            TriggerLevelCompleted();
     }
+#endif
 
     public void TriggerLevelCompleted()
     {
@@ -87,7 +84,6 @@ public class LevelCompletedLerp : MonoBehaviour
             return;
 
         isLevelCompleted = true;
-        ResolveReferences();
 
         int activeParticles = ParticleSimulation.Instance != null
             ? ParticleSimulation.Instance.ActiveParticles
@@ -178,8 +174,14 @@ public class LevelCompletedLerp : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+        if (MusicManager.Instance != null)
+        {
+            Destroy(MusicManager.Instance.gameObject);
+        }
+
         SceneManager.LoadScene(menuSceneName);
     }
+
     private IEnumerator AnimateMenu(float targetXValue)
     {
         float elapsedTime = 0f;
@@ -209,38 +211,5 @@ public class LevelCompletedLerp : MonoBehaviour
     {
         if (SceneLoader.Instance != null)
             SceneLoader.Instance.LoadNextLevel();
-    }
-
-    private void ResolveReferences()
-    {
-        if (scoreText == null && levelCompletedPanel != null)
-            scoreText = levelCompletedPanel.GetComponentInChildren<TMP_Text>(true);
-
-        if (levelCompletedPanel == null)
-            return;
-
-        if (completedTitle == null)
-        {
-            Transform title = levelCompletedPanel.Find("Titel");
-            completedTitle = title != null ? title.gameObject : null;
-        }
-
-        if (backToMenuButton == null)
-        {
-            Transform backButton = levelCompletedPanel.Find("Back to menu");
-            backToMenuButton = backButton != null ? backButton.gameObject : null;
-        }
-
-        if (scoreLabel == null)
-        {
-            Transform label = levelCompletedPanel.Find("ScoreTEXT");
-            scoreLabel = label != null ? label.gameObject : null;
-        }
-
-        if (lostImage == null)
-        {
-            Transform lostImgTransform = levelCompletedPanel.Find("LostImage");
-            lostImage = lostImgTransform != null ? lostImgTransform.gameObject : null;
-        }
     }
 }

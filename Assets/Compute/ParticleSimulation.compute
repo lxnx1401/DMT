@@ -7,18 +7,24 @@ struct Particle
     float2 offset;
     float damping;
     float forceScale;
+    float alive;
 };
 
 RWStructuredBuffer<Particle> particles;
 StructuredBuffer<float2> mouseHistory;
 StructuredBuffer<float> mouseSpeedHistory;
+// Absolute Zahl noch lebender Partikel, jeden Frame neu gezaehlt (nicht als Delta akkumuliert) --
+// so korrigiert sich ein vom CPU-seitig uebersprungenes Readback beim naechsten Mal von selbst,
+// statt Tode dauerhaft zu verlieren.
+RWStructuredBuffer<int> aliveCounter;
+RWStructuredBuffer<int> damageCounter;    // Hilfszähler für Ticket-System, jeden Frame auf 0
 
-uint particleCount;
+uint particleCapacity; // NEU: umbenannt von particleCount -- ist jetzt reine Buffer-Größe, KEIN "wie viele leben"-Zähler mehr
 uint historyCount;
 
 float time;
 float deltaTime;
-float mouseSpeed;
+int damageRequest; // NEU: wie viele lebende Partikel diesen Frame zusätzlich sterben sollen (aus TakeDamage)
 
 float tangentialStiffness;
 float lateralStiffness;
@@ -33,6 +39,13 @@ uint substeps;
 float minSpeed;
 float maxSpeed2;
 
+float neighborRadius;
+float preferredDistance;
+float cohesionStrength;
+float separationStrength;
+
+float blackHoleStrengthMultiplier;
+
 struct Obstacle
 {
     float2 position;
@@ -41,6 +54,17 @@ struct Obstacle
 
 StructuredBuffer<Obstacle> obstacles;
 uint obstacleCount;
+
+struct BlackHole
+{
+    float2 position;
+    float radius;
+    float pullRadius;
+    float strength;
+};
+
+StructuredBuffer<BlackHole> blackHoles;
+uint blackHoleCount;
 
 float hash11(float p)
 {
@@ -72,9 +96,31 @@ float2 sampleHistory(float t)
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     uint index = id.x;
-    if (index >= particleCount) return;
+    if (index >= particleCapacity) return; // NEU: reine Buffer-Grenze, keine "aktiv"-Bedeutung mehr
 
     Particle p = particles[index];
+
+    if (p.alive < 0.5)
+    {
+        particles[index] = p;
+        return;
+    }
+
+    // NEU: Ticket-basiertes Sterben für generischen Schaden (Bullets/Obstacles).
+    // Jedes lebende Partikel zieht ein Ticket; die ersten "damageRequest" Tickets sterben.
+    // Welches Partikel das trifft ist dadurch nicht vorhersagbar (GPU-Ausführungsreihenfolge) --
+    // das ist hier aber genau richtig: irgendein sichtbares Partikel stirbt, nicht "das letzte im Index".
+    if (damageRequest > 0)
+    {
+        int ticket;
+        InterlockedAdd(damageCounter[0], 1, ticket);
+        if (ticket < damageRequest)
+        {
+            p.alive = 0.0;
+            particles[index] = p;
+            return;
+        }
+    }
 
     float seedA = hash11(index * 12.9898);
     float seedB = hash11(index * 78.233 + 1.0);
@@ -107,16 +153,68 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float2 lateral = lerp(isoOffset, dirOffset, stretch);
     float2 target = pathPoint + lateral + wander;
 
+    float2 localForce = float2(0.0, 0.0);
+    uint neighborCount = 0;
+    for (uint j = 0; j < particleCapacity; j++)
+    {
+        if (j == index)
+            continue;
+
+        Particle neighbor = particles[j];
+        if (neighbor.alive < 0.5)
+            continue;
+
+        float2 delta = neighbor.position - p.position;
+        float dist = length(delta);
+
+        if (dist < 0.0001 || dist > neighborRadius)
+            continue;
+
+        float2 dir = delta / dist;
+        float distanceError = dist - preferredDistance;
+
+        localForce += dir * distanceError;
+        neighborCount++;
+    }
+    if (neighborCount > 0)
+        localForce /= (float)neighborCount;
+
     float subDt = deltaTime / (float)substeps;
     for (uint s = 0; s < substeps; s++)
     {
         float2 diff = target - p.position;
-
         float along = dot(diff, pathDir);
         float across = dot(diff, perp);
 
-        float2 force = (pathDir * along * tangentialStiffness
-                    + perp * across * lateralStiffness) * p.forceScale;
+        float2 blackHoleForce = float2(0.0, 0.0);
+        float captureBlend = 0.0;
+
+        for (uint bh = 0; bh < blackHoleCount; bh++)
+        {
+            BlackHole hole = blackHoles[bh];
+            float2 toHole = hole.position - p.position;
+            float holeDist = length(toHole);
+            if (holeDist > 0.0001 && holeDist < hole.pullRadius)
+            {
+                float2 pullDir = toHole / holeDist;
+                float clampedDist = max(holeDist, hole.radius * 0.5);
+                blackHoleForce += pullDir * hole.strength * blackHoleStrengthMultiplier / (clampedDist * clampedDist);
+
+                float t = 1.0 - saturate((holeDist - hole.radius) / (hole.pullRadius - hole.radius));
+                captureBlend = max(captureBlend, t * t);
+            }
+        }
+
+        float2 pathForce =
+            (pathDir * along * tangentialStiffness
+            + perp * across * lateralStiffness)
+            * p.forceScale
+            * (1.0 - captureBlend);
+
+        float2 force =
+            pathForce
+            + localForce * cohesionStrength
+            + blackHoleForce;
 
         p.velocity += force * subDt;
         p.velocity *= pow(p.damping, subDt * 60.0);
@@ -125,18 +223,15 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         if (speed > maxSpeed)
             p.velocity = p.velocity / speed * maxSpeed;
 
-        float2 prevPos = p.position;  
+        float2 prevPos = p.position;
         p.position += p.velocity * subDt;
 
-        // Kollision NACH der Bewegung auflösen
-        
-        float bounciness = 1.6; // >1 = übertriebener, knalliger Bounce; 1.0 = "normaler" Abprall; 0 = alte Version (nur stoppen)
-        float pushOutForce = 40.0; // zusätzlicher Schubs nach außen, damit's nicht "klebt"
+        float bounciness = 1.6;
+        float pushOutForce = 40.0;
 
         for (uint i = 0; i < obstacleCount; i++)
         {
             Obstacle o = obstacles[i];
-
             float2 toObstacle = o.position - prevPos;
             float2 moveVec = p.position - prevPos;
             float moveLen = length(moveVec);
@@ -144,25 +239,37 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
             float proj = clamp(dot(toObstacle, moveDir), 0.0, moveLen);
             float2 closestPoint = prevPos + moveDir * proj;
-
             float2 delta = closestPoint - o.position;
             float dist = length(delta);
 
             if (dist < o.radius)
             {
                 float2 normal = dist > 0.0001 ? delta / dist : float2(1, 0);
-
                 p.position = o.position + normal * (o.radius * 1.001);
 
                 float vn = dot(p.velocity, normal);
                 if (vn < 0)
-                    p.velocity -= normal * vn * (1.0 + bounciness); // Reflexion statt nur Stoppen
+                    p.velocity -= normal * vn * (1.0 + bounciness);
 
-                // Zusätzlicher Impuls nach außen, damit es "knallt" statt nur abgleitet
                 p.velocity += normal * pushOutForce * subDt;
             }
         }
+
+        for (uint h = 0; h < blackHoleCount; h++)
+        {
+            BlackHole hole = blackHoles[h];
+            if (p.alive > 0.5 && length(p.position - hole.position) < hole.radius)
+            {
+                p.alive = 0.0;
+                break;
+            }
+        }
     }
+
+    // Nur Partikel, die den ganzen Frame ueberlebt haben, zaehlen als "noch lebend" --
+    // wird vom CPU-seitigen Readback als absolute ActiveParticles-Zahl uebernommen.
+    if (p.alive > 0.5)
+        InterlockedAdd(aliveCounter[0], 1);
 
     particles[index] = p;
 }

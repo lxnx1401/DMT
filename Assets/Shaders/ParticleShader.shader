@@ -21,14 +21,20 @@ Shader "Custom/ParticleShader"
             {
                 float2 position;
                 float2 velocity;
-                float2 offset;      // neu
-                float damping;      // neu
-                float forceScale;   // neu
+                float2 offset;
+                float damping;
+                float forceScale;
+                float alive;
             };
 
             StructuredBuffer<Particle> particles;
+
             float _ParticleRadius;
             float4 _TintColor;
+            float4 _FlashColor;
+            float _FlashAmount;
+            float _FlashBrightness;
+            float _StartHue;
 
             struct Varyings
             {
@@ -45,6 +51,13 @@ Shader "Custom/ParticleShader"
 
                 Particle p = particles[particleID];
 
+                if (p.alive < 0.5)
+                {
+                    o.positionHCS = float4(0,0,0,0);
+                    o.uv = 0;
+                    return o;
+                }
+
                 float2 corners[6] = {
                     float2(-1, -1),
                     float2(-1,  1),
@@ -53,25 +66,53 @@ Shader "Custom/ParticleShader"
                     float2( 1,  1),
                     float2( 1, -1)
                 };
+
                 float2 corner = corners[cornerID];
 
-                // Offset in World Space anwenden -> skaliert automatisch mit Zoom
-                float3 worldPos = float3(p.position + corner * _ParticleRadius, 0.0);
+                float3 worldPos = float3(
+                    p.position + corner * _ParticleRadius,
+                    0.0
+                );
+
                 float4 clip = TransformWorldToHClip(worldPos);
 
                 o.positionHCS = clip;
                 o.uv = corner;
+
                 return o;
             }
+
+            float3 HueToRGB(float h)
+            {
+                float3 rgb = abs(frac(h + float3(0.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
+                return saturate(rgb - 1.0);
+            }
+
             float4 frag(Varyings i) : SV_Target
             {
                 float dist = length(i.uv);
                 float aa = fwidth(dist);
                 float alpha = 1.0 - smoothstep(1.0 - aa, 1.0, dist);
 
-                if (alpha <= 0.0) discard;
+                if (alpha <= 0.0)
+                    discard;
 
-                return float4(_TintColor.rgb, alpha * _TintColor.a);
+                // Hue läuft kontinuierlich von 0 -> 1 und beginnt danach wieder von vorne.
+                float hue = _StartHue;
+                float3 rainbowColor = HueToRGB(hue);
+
+                float3 flashColor = _FlashColor.rgb * _FlashBrightness;
+
+                float3 finalColor = lerp(
+                    rainbowColor,
+                    flashColor,
+                    _FlashAmount
+                );
+
+                return float4(
+                    finalColor,
+                    alpha * _TintColor.a
+                );
             }
 
             ENDHLSL
