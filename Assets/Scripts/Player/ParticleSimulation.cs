@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.Rendering;
 
 public class ParticleSimulation : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class ParticleSimulation : MonoBehaviour
         public Vector2 offset;
         public float damping;
         public float forceScale;
+        public float alive;
     }
     [StructLayout(LayoutKind.Sequential)]
     struct ObstacleData
@@ -86,6 +88,10 @@ public class ParticleSimulation : MonoBehaviour
     public Vector2 PlayerPosition { get; private set; }
     private Rigidbody2D rb;
 
+    private ComputeBuffer killCounterBuffer;
+    private int[] killCounterReset = { 0 };
+    private bool readbackInFlight; // verhindert überlappende Requests
+
     public static ParticleSimulation Instance;
 
     void Awake()
@@ -110,11 +116,16 @@ public class ParticleSimulation : MonoBehaviour
             particles[i].position = Random.insideUnitCircle * 5f;
             particles[i].velocity = Vector2.zero;
             particles[i].offset = Random.insideUnitCircle;
-            // engerer Bereich als vorher -> keine Resonanz-Kombinationen mehr
             particles[i].damping = Random.Range(0.86f, 0.94f);
             particles[i].forceScale = Random.Range(0.75f, 1.25f);
+            particles[i].alive = 1f; // NEU
         }
         particleBuffer.SetData(particles);
+
+        // NEU: Kill-Counter-Buffer
+        killCounterBuffer = new ComputeBuffer(1, sizeof(int));
+        killCounterBuffer.SetData(killCounterReset);
+        simulationShader.SetBuffer(kernelIndex, "killCounter", killCounterBuffer);
 
         mouseHistory = new Vector2[trailHistoryLength];
         mouseSpeedHistory = new float[trailHistoryLength]; // NEU
@@ -259,6 +270,11 @@ public class ParticleSimulation : MonoBehaviour
         simulationShader.SetFloat("maxSpeed", maxSpeed);
 
         simulationShader.Dispatch(kernelIndex, Mathf.CeilToInt(particleCapacity / 256f), 1, 1);
+        if (!readbackInFlight)
+        {
+            readbackInFlight = true;
+            AsyncGPUReadback.Request(killCounterBuffer, OnKillCounterReadback);
+        }
 
         particleMaterial.SetBuffer("particles", particleBuffer);
         Graphics.DrawProcedural(
@@ -377,6 +393,31 @@ public class ParticleSimulation : MonoBehaviour
         }
     }
 
+    // Wird von EndlessWorldController nach jedem Kachel-Refresh aufgerufen, damit neu gespawnte
+    // Hindernisse/Black Holes auch in der GPU-Kollision/-Anziehung berücksichtigt werden - im
+    // Level-Modus reicht der einmalige Aufruf in Start(), weil dort schon alles vorab spawnt.
+    public void RefreshHazardBuffers()
+    {
+        UpdateObstacleBuffer();
+        UpdateBlackHoleBuffer();
+    }
+    
+    private void OnKillCounterReadback(AsyncGPUReadbackRequest request)
+    {
+        readbackInFlight = false;
+
+        if (request.hasError)
+            return;
+
+        int killedThisFrame = request.GetData<int>()[0];
+
+        if (killedThisFrame > 0)
+        {
+            RemoveParticles(killedThisFrame); // bestehende Methode, unverändert nutzbar!
+            killCounterBuffer.SetData(killCounterReset); // Counter zurücksetzen für nächsten Frame
+        }
+    }
+
     public void ResetMouse()
     {
         hasLastMouse = false;
@@ -390,5 +431,7 @@ public class ParticleSimulation : MonoBehaviour
         mouseSpeedHistoryBuffer?.Release();
         obstacleBuffer?.Release();
         blackHoleBuffer?.Release();
+        killCounterBuffer?.Release();
     }
 }
+

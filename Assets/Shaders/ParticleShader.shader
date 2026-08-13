@@ -24,6 +24,7 @@ Shader "Custom/ParticleShader"
                 float2 offset;      // neu
                 float damping;      // neu
                 float forceScale;   // neu
+                float alive;
             };
 
             StructuredBuffer<Particle> particles;
@@ -44,6 +45,13 @@ Shader "Custom/ParticleShader"
                 uint cornerID   = vertexID % 6;
 
                 Particle p = particles[particleID];
+
+                if (p.alive < 0.5)
+                {
+                    o.positionHCS = float4(0,0,0,0); // degeneriert, wird nicht gerastert
+                    o.uv = 0;
+                    return o;
+                }
 
                 float2 corners[6] = {
                     float2(-1, -1),

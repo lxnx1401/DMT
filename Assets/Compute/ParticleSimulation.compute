@@ -7,18 +7,19 @@ struct Particle
     float2 offset;
     float damping;
     float forceScale;
+    float alive; // NEU: 1 = lebt, 0 = verschluckt/tot
 };
 
 RWStructuredBuffer<Particle> particles;
 StructuredBuffer<float2> mouseHistory;
 StructuredBuffer<float> mouseSpeedHistory;
+RWStructuredBuffer<int> killCounter; // NEU: Größe 1, zählt getötete Partikel pro Frame
 
 uint particleCount;
 uint historyCount;
 
 float time;
 float deltaTime;
-float mouseSpeed;
 
 float tangentialStiffness;
 float lateralStiffness;
@@ -92,6 +93,13 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
     Particle p = particles[index];
 
+    // NEU: tote Partikel komplett überspringen, keine Physik mehr für sie
+    if (p.alive < 0.5)
+    {
+        particles[index] = p;
+        return;
+    }
+
     float seedA = hash11(index * 12.9898);
     float seedB = hash11(index * 78.233 + 1.0);
     float seedC = hash11(index * 45.164 + 2.0);
@@ -131,6 +139,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             continue;
 
         Particle neighbor = particles[j];
+        if (neighbor.alive < 0.5) // NEU: tote Nachbarn ignorieren
+            continue;
 
         float2 delta = neighbor.position - p.position;
         float dist = length(delta);
@@ -185,13 +195,11 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         if (speed > maxSpeed)
             p.velocity = p.velocity / speed * maxSpeed;
 
-        float2 prevPos = p.position;  
+        float2 prevPos = p.position;
         p.position += p.velocity * subDt;
 
-        // Kollision NACH der Bewegung auflösen
-        
-        float bounciness = 1.6; // >1 = übertriebener, knalliger Bounce; 1.0 = "normaler" Abprall; 0 = alte Version (nur stoppen)
-        float pushOutForce = 40.0; // zusätzlicher Schubs nach außen, damit's nicht "klebt"
+        float bounciness = 1.6;
+        float pushOutForce = 40.0;
 
         for (uint i = 0; i < obstacleCount; i++)
         {
@@ -211,25 +219,25 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             if (dist < o.radius)
             {
                 float2 normal = dist > 0.0001 ? delta / dist : float2(1, 0);
-
                 p.position = o.position + normal * (o.radius * 1.001);
 
                 float vn = dot(p.velocity, normal);
                 if (vn < 0)
-                    p.velocity -= normal * vn * (1.0 + bounciness); // Reflexion statt nur Stoppen
+                    p.velocity -= normal * vn * (1.0 + bounciness);
 
-                // Zusätzlicher Impuls nach außen, damit es "knallt" statt nur abgleitet
                 p.velocity += normal * pushOutForce * subDt;
             }
         }
 
+        // NEU: echtes Verschlucken statt Zurücksetzen
         for (uint h = 0; h < blackHoleCount; h++)
         {
             BlackHole hole = blackHoles[h];
-            if (length(p.position - hole.position) < hole.radius)
+            if (p.alive > 0.5 && length(p.position - hole.position) < hole.radius)
             {
-                p.position = pathPoint + p.offset * idleWidth;
-                p.velocity = float2(0, 0);
+                p.alive = 0.0;
+                InterlockedAdd(killCounter[0], 1);
+                break; // ein Partikel kann pro Frame nur einmal sterben
             }
         }
     }
