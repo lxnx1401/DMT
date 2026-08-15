@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: d9ca3205082ac7e4ea94814d78a333df
+guid: e173071671d624642b26aeea1cdd4822
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 9182424726241436359
-    second: krone01_0
-  - first:
-      213: 1474280578556592583
-    second: krone01_1
-  - first:
-      213: 5029329097054359949
-    second: krone01_2
+      213: 5496511865930994475
+    second: hinderniss03_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -58,7 +52,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 0, y: 59, z: 0, w: 0}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -106,67 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: krone01_0
+      name: hinderniss03_0
       rect:
         serializedVersion: 2
-        x: 69
-        y: 106
-        width: 32
-        height: 32
+        x: 12
+        y: 13
+        width: 185
+        height: 185
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7c2626053a68e6f70800000000000000
-      internalID: 9182424726241436359
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: krone01_1
-      rect:
-        serializedVersion: 2
-        x: 22
-        y: 68
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7c18f180062b57410800000000000000
-      internalID: 1474280578556592583
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: krone01_2
-      rect:
-        serializedVersion: 2
-        x: 125
-        y: 68
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d811670da24cbc540800000000000000
-      internalID: 5029329097054359949
+      spriteID: b2359889b68874c40800000000000000
+      internalID: 5496511865930994475
       vertices: []
       indices: 
       edges: []
@@ -176,7 +126,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -185,9 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      krone01_0: 9182424726241436359
-      krone01_1: 1474280578556592583
-      krone01_2: 5029329097054359949
+      hinderniss03_0: 5496511865930994475
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
