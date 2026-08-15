@@ -1,10 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Hält die Bewegungs-Historie des Mauszeigers (Position + Geschwindigkeit) für die
-/// Trail-Darstellung im Shader. Reine Datenklasse ohne MonoBehaviour-Abhängigkeit,
-/// damit sie unabhängig von Update()/Start() testbar bleibt.
-/// </summary>
+
 public class MouseTrailSampler
 {
     private readonly Vector2[] positions;
@@ -29,11 +25,6 @@ public class MouseTrailSampler
         }
     }
 
-    /// <summary>
-    /// Schiebt bei Bedarf (ggf. mehrfach, je nach vergangener Zeit) einen neuen Sample-Punkt
-    /// vorne in die Historie. Gibt zurück, ob mindestens ein Sample genommen wurde, damit der
-    /// Aufrufer die GPU-Buffer nur bei tatsächlicher Änderung neu befüllt.
-    /// </summary>
     public bool Sample(float deltaTime, Vector2 currentPosition, float currentSpeed)
     {
         sampleTimer += deltaTime;
