@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.33226, y: 5.59142, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 4e630036b06e48444b8e3e14303c651a, type: 3}
-  m_Color: {r: 1, g: 0.9922104, b: 0.49056602, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -128,7 +128,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.8
+  m_Radius: 1.5
 --- !u!114 &929052513079685756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,3 +142,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crown
   crownCollectSound: {fileID: 8300000, guid: bc225b1e8f296624b8a4caef9aa5ab70, type: 3}
+  crownVariations:
+  - sprite: {fileID: 21300000, guid: d9ca3205082ac7e4ea94814d78a333df, type: 3}
+  - sprite: {fileID: 21300000, guid: fcf17af789862c747b73f636a0bb9e38, type: 3}
+  - sprite: {fileID: 21300000, guid: f0c658ecf4e924241b980a5d12c276cf, type: 3}
+  - sprite: {fileID: 21300000, guid: 61332b9e10cf53b408efdaf8fd28b740, type: 3}
+  - sprite: {fileID: 21300000, guid: 4e630036b06e48444b8e3e14303c651a, type: 3}
+  hueShiftSpeed: 0.8
+  saturation: 0.5
+  scaleSpeed: 8
+  minScaleMultiplier: 0.5
+  maxScaleMultiplier: 1
