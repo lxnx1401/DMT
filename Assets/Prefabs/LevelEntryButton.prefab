@@ -137,7 +137,7 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4f3d1ed178b52b9428e9e0d5ddadc363, type: 3}
   clickSound: {fileID: 8300000, guid: 20984457cd0186f4dab8004784b8b1ec, type: 3}
-  sfxMixerGroup: {fileID: 0}
+  sfxMixerGroup: {fileID: -478629356075616368, guid: 6414e2f6b51b0b74d87dde0c61c31ad4, type: 2}
 --- !u!1 &6455436733598960897
 GameObject:
   m_ObjectHideFlags: 0
