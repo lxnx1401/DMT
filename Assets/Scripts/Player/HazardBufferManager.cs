@@ -1,10 +1,7 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-/// <summary>
-/// Verwaltet die ComputeBuffer für Hindernisse und Schwarze Löcher: Sammelt die
-/// Szenen-Objekte ein, befüllt die Buffer neu und bindet sie an den Kernel.
-/// </summary>
+
 public class HazardBufferManager
 {
     [StructLayout(LayoutKind.Sequential)]
@@ -35,11 +32,7 @@ public class HazardBufferManager
         this.kernelIndex = kernelIndex;
     }
 
-    /// <summary>
-    /// Liest alle Hindernisse und Black Holes aus der Szene neu ein und aktualisiert die
-    /// GPU-Buffer. Wird einmalig in Start() sowie von EndlessWorldController nach jedem
-    /// Kachel-Refresh aufgerufen, damit neu gespawnte Objekte in der GPU-Simulation ankommen.
-    /// </summary>
+
     public void RefreshAll()
     {
         RefreshObstacles();
