@@ -16,8 +16,6 @@ public class LevelSelectController : MonoBehaviour
         Populate();
     }
 
-    // Nur das Label wird automatisch aktualisiert - der Klick-Handler wird bewusst NICHT hier
-    // verdrahtet, sondern über OnClick() im Inspector auf SelectEndless() gesetzt.
     private void UpdateEndlessButtonLabel()
     {
         if (endlessButton == null)

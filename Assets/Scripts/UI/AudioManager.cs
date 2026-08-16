@@ -30,7 +30,6 @@ public class AudioManager : MonoBehaviour
         bool isMusicMuted = PlayerPrefs.GetInt(MUSIC_MUTE_KEY, 0) == 1;
         bool isSoundMuted = PlayerPrefs.GetInt(SOUND_MUTE_KEY, 0) == 1;
 
-        // Falls gemutet war, sichern wir den echten Lautstärkewert für später
         preMuteMusicVolume = savedMusic > 0.0001f ? savedMusic : 0.75f;
         preMuteSoundVolume = savedSound > 0.0001f ? savedSound : 0.75f;
 
@@ -40,7 +39,6 @@ public class AudioManager : MonoBehaviour
         if (musicMuteToggle != null) musicMuteToggle.isOn = isMusicMuted;
         if (soundMuteToggle != null) soundMuteToggle.isOn = isSoundMuted;
 
-        // Erzwingt die korrekten Mixer-Einstellungen direkt beim Szenenstart
         UpdateMusicState(isMusicMuted);
         UpdateSoundState(isSoundMuted);
     }

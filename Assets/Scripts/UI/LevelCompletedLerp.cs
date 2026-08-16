@@ -60,7 +60,6 @@ public class LevelCompletedLerp : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    // Debug-Shortcut zum schnellen Testen des Completed-Screens - läuft nie in einem Build.
     void Update()
     {
         if (Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame && !isLevelCompleted)

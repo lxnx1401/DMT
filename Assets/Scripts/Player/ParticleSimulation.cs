@@ -22,17 +22,17 @@ public class ParticleSimulation : MonoBehaviour
 
     [Header("Trail / Path")]
     [SerializeField] private int trailHistoryLength = 48;
-    [SerializeField] private float trailDuration = 0.35f; // wie lange die Spur "hält" (Sekunden)
+    [SerializeField] private float trailDuration = 0.35f; 
 
     [Header("Weltgrenze")]
-    [SerializeField, Min(0f)] private float boundaryMargin = 3f; // Sicherheitsabstand, damit der ausgefranste Schwarmrand nicht optisch über die Linie geht
+    [SerializeField, Min(0f)] private float boundaryMargin = 3f; 
 
     [Header("Tuning")]
     [SerializeField] private float tangentialStiffness = 140f;
-    [SerializeField] private float lateralStiffness = 260f;    // > tangential = engere Formhaltung
+    [SerializeField] private float lateralStiffness = 260f;   
     [SerializeField] private float trailWidth = 0.4f;
     [SerializeField] private float idleWidth = 2.5f;
-    [SerializeField] private float tailTaper = 0.1f;           // 0 = spitz zulaufend, 1 = keine Verjüngung
+    [SerializeField] private float tailTaper = 0.1f; 
     [SerializeField] private float wanderStrength = 0.12f;
     [SerializeField] private float stretchResponse = 0.08f;
     [SerializeField] private float minSpeed = 0.15f;
@@ -42,15 +42,13 @@ public class ParticleSimulation : MonoBehaviour
     [Header("Stabilität")]
     [SerializeField] private int substeps = 4;
     [SerializeField] private float maxSpeed = 60f;
-    [SerializeField] private float mouseVelSmoothing = 0.15f; // niedriger = träger/ruhiger
-    [SerializeField] private float mousePosSmoothing = 25f;   // höher = reaktionsschneller, niedriger = glatter
+    [SerializeField] private float mouseVelSmoothing = 0.15f; 
+    [SerializeField] private float mousePosSmoothing = 25f;   
 
     public int ActiveParticles => aliveTracker.ActiveParticles;
     public int MaxParticles => particleCapacity;
     public Vector2 HeadPosition => PlayerPosition;
-    // Hindernis-/Gegner-Spawner laufen absichtlich VOR ParticleSimulation.Start() (siehe deren
-    // negative DefaultExecutionOrder) und fragen PlayerPosition schon vor dessen Initialisierung ab --
-    // motion ist bis dahin noch null, daher hier defensiv statt eines NullReferenceException-Absturzes.
+
     public Vector2 PlayerPosition => motion != null ? motion.PlayerPosition : Vector2.zero;
 
     public static ParticleSimulation Instance;
@@ -227,7 +225,6 @@ public class ParticleSimulation : MonoBehaviour
 
         aliveTracker.ResetForFrame();
 
-        // WICHTIG: Dispatch + Readback + Draw laufen jeweils nur EINMAL pro Frame.
         simulationShader.Dispatch(kernelIndex, Mathf.CeilToInt(particleCapacity / 256f), 1, 1);
         aliveTracker.RequestReadback();
 
@@ -256,7 +253,6 @@ public class ParticleSimulation : MonoBehaviour
         simulationShader.SetFloat("stretchResponse", stretchResponse);
         simulationShader.SetFloat("maxSpeed", maxSpeed);
 
-        // Schaden für diesen Frame reinreichen, Hilfszähler zurücksetzen
         simulationShader.SetInt("damageRequest", pendingDamage);
         damageCounterBuffer.SetData(zeroReset);
         pendingDamage = 0;
@@ -280,7 +276,7 @@ public class ParticleSimulation : MonoBehaviour
             particleMaterial,
             new Bounds(new Vector3(PlayerPosition.x, PlayerPosition.y, 0f), Vector3.one * 1000),
             MeshTopology.Triangles,
-            particleCapacity * 6 // IMMER volle Kapazität -- alive-Flag entscheidet Sichtbarkeit, nicht der Index
+            particleCapacity * 6 
         );
     }
 
@@ -291,14 +287,13 @@ public class ParticleSimulation : MonoBehaviour
             return;
 
         StartCoroutine(DamageFlash());
-        pendingDamage += amount; // GPU killt per Ticket-System tatsächlich sichtbare, lebende Partikel
+        pendingDamage += amount; 
     }
 
     IEnumerator DamageFlash()
     {
         particleMaterial.SetFloat("_FlashAmount", 1f);
 
-        // Rot etwas länger halten
         yield return new WaitForSeconds(0.15f);
 
         float duration = 0.2f;
@@ -321,9 +316,7 @@ public class ParticleSimulation : MonoBehaviour
         enabled = false;
     }
 
-    // Wird von EndlessWorldController nach jedem Kachel-Refresh aufgerufen, damit neu gespawnte
-    // Hindernisse/Black Holes auch in der GPU-Kollision/-Anziehung berücksichtigt werden - im
-    // Level-Modus reicht der einmalige Aufruf in Start(), weil dort schon alles vorab spawnt.
+
     public void RefreshHazardBuffers()
     {
         hazards.RefreshAll();

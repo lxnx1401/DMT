@@ -61,13 +61,10 @@ public class PauseMenuLerp : MonoBehaviour
 
     private IEnumerator Start()
     {
-        // 1. Listeners programmgesteuert zuweisen
         SetupUIListeners();
 
-        // 2. Wichtig für neue Level: 1 Frame warten, bis der AudioMixer der neuen Szene bereit ist
         yield return null;
 
-        // 3. Exakte Audio-Settings aus den PlayerPrefs laden
         LoadAudioSettings();
     }
 
@@ -124,7 +121,6 @@ public class PauseMenuLerp : MonoBehaviour
         SceneManager.LoadScene(menuSceneName);
     }
 
-    // --- SETUP UI LISTENERS ---
 
     private void SetupUIListeners()
     {
@@ -153,7 +149,6 @@ public class PauseMenuLerp : MonoBehaviour
         }
     }
 
-    // --- AUDIO LOGIK ---
 
     private void LoadAudioSettings()
     {

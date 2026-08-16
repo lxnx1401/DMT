@@ -1,0 +1,897 @@
+fileFormatVersion: 2
+guid: f12ee307c3140c84ebf363fa95933fb8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8742128893983616040
+    second: Frame 28_0
+  - first:
+      213: -2380311892768843346
+    second: Frame 28_1
+  - first:
+      213: 7594577814879811601
+    second: Frame 28_2
+  - first:
+      213: -7687822350870552480
+    second: Frame 28_3
+  - first:
+      213: 4568543492313098567
+    second: Frame 28_4
+  - first:
+      213: 666488198373641301
+    second: Frame 28_5
+  - first:
+      213: -5348964182695126399
+    second: Frame 28_6
+  - first:
+      213: 6919933052641628327
+    second: Frame 28_7
+  - first:
+      213: 2958684512462138104
+    second: Frame 28_8
+  - first:
+      213: 5183368784042889328
+    second: Frame 28_9
+  - first:
+      213: 7876335758692744350
+    second: Frame 28_10
+  - first:
+      213: -9193523258954931770
+    second: Frame 28_11
+  - first:
+      213: 2879195944182374065
+    second: Frame 28_12
+  - first:
+      213: -2363488548246385907
+    second: Frame 28_13
+  - first:
+      213: 6055240927361769756
+    second: Frame 28_14
+  - first:
+      213: -2756954716291370006
+    second: Frame 28_15
+  - first:
+      213: -6817862897193946505
+    second: Frame 28_16
+  - first:
+      213: -3504767081866960176
+    second: Frame 28_17
+  - first:
+      213: 8656427617902135753
+    second: Frame 28_18
+  - first:
+      213: 4735291836580784920
+    second: Frame 28_19
+  - first:
+      213: 3785270352587773160
+    second: Frame 28_20
+  - first:
+      213: -774172413079088099
+    second: Frame 28_21
+  - first:
+      213: -5115234387509004878
+    second: Frame 28_22
+  - first:
+      213: -5150422679880269971
+    second: Frame 28_23
+  - first:
+      213: -4381553081229629271
+    second: Frame 28_24
+  - first:
+      213: -8095781089490858892
+    second: Frame 28_25
+  - first:
+      213: -6554355116150628333
+    second: Frame 28_26
+  - first:
+      213: 4237549475928282271
+    second: Frame 28_27
+  - first:
+      213: -8870525463715576953
+    second: Frame 28_28
+  - first:
+      213: 401403923317443752
+    second: Frame 28_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Frame 28_0
+      rect:
+        serializedVersion: 2
+        x: 1164
+        y: 928
+        width: 284
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d39d65b618bda680800000000000000
+      internalID: -8742128893983616040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_1
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 596
+        width: 96
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea910e8e1fe67fed0800000000000000
+      internalID: -2380311892768843346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_2
+      rect:
+        serializedVersion: 2
+        x: 773
+        y: 594
+        width: 96
+        height: 140
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11839fae84c556960800000000000000
+      internalID: 7594577814879811601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_3
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 596
+        width: 92
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0606d00cd4e5f4590800000000000000
+      internalID: -7687822350870552480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_4
+      rect:
+        serializedVersion: 2
+        x: 1014
+        y: 596
+        width: 109
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 749ae30e91ab66f30800000000000000
+      internalID: 4568543492313098567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_5
+      rect:
+        serializedVersion: 2
+        x: 1153
+        y: 596
+        width: 109
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55c0d073c77df3900800000000000000
+      internalID: 666488198373641301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_6
+      rect:
+        serializedVersion: 2
+        x: 1354
+        y: 596
+        width: 109
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18a5b267a69a4c5b0800000000000000
+      internalID: -5348964182695126399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_7
+      rect:
+        serializedVersion: 2
+        x: 1497
+        y: 596
+        width: 96
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a05030b27a880060800000000000000
+      internalID: 6919933052641628327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_8
+      rect:
+        serializedVersion: 2
+        x: 1596
+        y: 595
+        width: 119
+        height: 139
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fa61c763eb5f0920800000000000000
+      internalID: 2958684512462138104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_9
+      rect:
+        serializedVersion: 2
+        x: 1734
+        y: 596
+        width: 112
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07099b842760fe740800000000000000
+      internalID: 5183368784042889328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_10
+      rect:
+        serializedVersion: 2
+        x: 1878
+        y: 596
+        width: 92
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9c769454ad5e4d60800000000000000
+      internalID: 7876335758692744350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_11
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 359
+        width: 56
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c123bb2e4b0a6080800000000000000
+      internalID: -9193523258954931770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_12
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 359
+        width: 58
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1be5cb3e475f4f720800000000000000
+      internalID: 2879195944182374065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_13
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 359
+        width: 46
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0b021b00b3333fd0800000000000000
+      internalID: -2363488548246385907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_14
+      rect:
+        serializedVersion: 2
+        x: 886
+        y: 359
+        width: 56
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c112ec89a89880450800000000000000
+      internalID: 6055240927361769756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_15
+      rect:
+        serializedVersion: 2
+        x: 952
+        y: 359
+        width: 56
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae37d91ea445db9d0800000000000000
+      internalID: -2756954716291370006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_16
+      rect:
+        serializedVersion: 2
+        x: 1018
+        y: 359
+        width: 45
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 772707d41d51261a0800000000000000
+      internalID: -6817862897193946505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_17
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 358
+        width: 47
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d266d878e09c5fc0800000000000000
+      internalID: -3504767081866960176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_18
+      rect:
+        serializedVersion: 2
+        x: 1159
+        y: 359
+        width: 56
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c900f40e0fc12870800000000000000
+      internalID: 8656427617902135753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_19
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 359
+        width: 58
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81b643336d227b140800000000000000
+      internalID: 4735291836580784920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_20
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 359
+        width: 46
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e4dfc8945bf78430800000000000000
+      internalID: 3785270352587773160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_21
+      rect:
+        serializedVersion: 2
+        x: 1388
+        y: 359
+        width: 48
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d149383ca469145f0800000000000000
+      internalID: -774172413079088099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_22
+      rect:
+        serializedVersion: 2
+        x: 1436
+        y: 358
+        width: 58
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b5b9ad1d690309b0800000000000000
+      internalID: -5115234387509004878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_23
+      rect:
+        serializedVersion: 2
+        x: 1505
+        y: 359
+        width: 57
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6ffe9a5cd50688b0800000000000000
+      internalID: -5150422679880269971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_24
+      rect:
+        serializedVersion: 2
+        x: 1577
+        y: 359
+        width: 54
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a82ac4efa89133c0800000000000000
+      internalID: -4381553081229629271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_25
+      rect:
+        serializedVersion: 2
+        x: 1645
+        y: 359
+        width: 46
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47c829d0ef106af80800000000000000
+      internalID: -8095781089490858892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_26
+      rect:
+        serializedVersion: 2
+        x: 1733
+        y: 359
+        width: 64
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 310e3129fb04a05a0800000000000000
+      internalID: -6554355116150628333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_27
+      rect:
+        serializedVersion: 2
+        x: 1814
+        y: 359
+        width: 45
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9419defbccceca30800000000000000
+      internalID: 4237549475928282271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_28
+      rect:
+        serializedVersion: 2
+        x: 1872
+        y: 359
+        width: 55
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7830d2cb61095e480800000000000000
+      internalID: -8870525463715576953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frame 28_29
+      rect:
+        serializedVersion: 2
+        x: 1944
+        y: 359
+        width: 57
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8acc8c4ddb2129500800000000000000
+      internalID: 401403923317443752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Frame 28_0: -8742128893983616040
+      Frame 28_1: -2380311892768843346
+      Frame 28_10: 7876335758692744350
+      Frame 28_11: -9193523258954931770
+      Frame 28_12: 2879195944182374065
+      Frame 28_13: -2363488548246385907
+      Frame 28_14: 6055240927361769756
+      Frame 28_15: -2756954716291370006
+      Frame 28_16: -6817862897193946505
+      Frame 28_17: -3504767081866960176
+      Frame 28_18: 8656427617902135753
+      Frame 28_19: 4735291836580784920
+      Frame 28_2: 7594577814879811601
+      Frame 28_20: 3785270352587773160
+      Frame 28_21: -774172413079088099
+      Frame 28_22: -5115234387509004878
+      Frame 28_23: -5150422679880269971
+      Frame 28_24: -4381553081229629271
+      Frame 28_25: -8095781089490858892
+      Frame 28_26: -6554355116150628333
+      Frame 28_27: 4237549475928282271
+      Frame 28_28: -8870525463715576953
+      Frame 28_29: 401403923317443752
+      Frame 28_3: -7687822350870552480
+      Frame 28_4: 4568543492313098567
+      Frame 28_5: 666488198373641301
+      Frame 28_6: -5348964182695126399
+      Frame 28_7: 6919933052641628327
+      Frame 28_8: 2958684512462138104
+      Frame 28_9: 5183368784042889328
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

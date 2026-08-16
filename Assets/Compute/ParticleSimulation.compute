@@ -13,18 +13,15 @@ struct Particle
 RWStructuredBuffer<Particle> particles;
 StructuredBuffer<float2> mouseHistory;
 StructuredBuffer<float> mouseSpeedHistory;
-// Absolute Zahl noch lebender Partikel, jeden Frame neu gezaehlt (nicht als Delta akkumuliert) --
-// so korrigiert sich ein vom CPU-seitig uebersprungenes Readback beim naechsten Mal von selbst,
-// statt Tode dauerhaft zu verlieren.
 RWStructuredBuffer<int> aliveCounter;
-RWStructuredBuffer<int> damageCounter;    // Hilfszähler für Ticket-System, jeden Frame auf 0
+RWStructuredBuffer<int> damageCounter;    
 
-uint particleCapacity; // NEU: umbenannt von particleCount -- ist jetzt reine Buffer-Größe, KEIN "wie viele leben"-Zähler mehr
+uint particleCapacity;
 uint historyCount;
 
 float time;
 float deltaTime;
-int damageRequest; // NEU: wie viele lebende Partikel diesen Frame zusätzlich sterben sollen (aus TakeDamage)
+int damageRequest; 
 
 float tangentialStiffness;
 float lateralStiffness;
@@ -106,10 +103,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         return;
     }
 
-    // NEU: Ticket-basiertes Sterben für generischen Schaden (Bullets/Obstacles).
-    // Jedes lebende Partikel zieht ein Ticket; die ersten "damageRequest" Tickets sterben.
-    // Welches Partikel das trifft ist dadurch nicht vorhersagbar (GPU-Ausführungsreihenfolge) --
-    // das ist hier aber genau richtig: irgendein sichtbares Partikel stirbt, nicht "das letzte im Index".
     if (damageRequest > 0)
     {
         int ticket;
@@ -266,8 +259,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         }
     }
 
-    // Nur Partikel, die den ganzen Frame ueberlebt haben, zaehlen als "noch lebend" --
-    // wird vom CPU-seitigen Readback als absolute ActiveParticles-Zahl uebernommen.
     if (p.alive > 0.5)
         InterlockedAdd(aliveCounter[0], 1);
 

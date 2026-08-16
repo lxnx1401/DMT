@@ -22,8 +22,6 @@ public class LaserEnemy : MonoBehaviour
         baseScale = transform.localScale;
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-            spriteRenderer.color = Color.red;
     }
 
     private void Update()

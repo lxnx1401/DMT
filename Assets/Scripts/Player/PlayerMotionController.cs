@@ -1,11 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Liest die Zeigerposition, glättet sie und lässt die Spielerposition mit begrenzter
-/// Geschwindigkeit hinterherlaufen. Kümmert sich außerdem um das Clamping an die
-/// Spielfeldgrenzen (inkl. Endlos-Modus-Sonderfall).
-/// </summary>
+
 public class PlayerMotionController
 {
     private readonly float posSmoothing;
@@ -40,11 +36,7 @@ public class PlayerMotionController
         SmoothedMouseVelocity = Vector2.zero;
     }
 
-    /// <summary>
-    /// Aktualisiert Spielerposition, geglättete Maus-Geschwindigkeit etc. für diesen Frame.
-    /// Gibt die tatsächliche Spieler-Geschwindigkeit (Welt-Einheiten/s) zurück, z. B. für den
-    /// Hue-Shift im Aufrufer.
-    /// </summary>
+   
     public float Tick(float dt, float speedMultiplier)
     {
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
@@ -74,7 +66,7 @@ public class PlayerMotionController
 
     private Vector2 ClampToPlayArea(Vector2 point)
     {
-        // Endlos-Modus: kein Rand mehr, echtes unendliches Durchwandern über Kacheln.
+
         if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode)
             return point;
 

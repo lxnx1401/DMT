@@ -29,17 +29,14 @@ public class UIButtonSounds : MonoBehaviour, IPointerEnterHandler, IPointerClick
             audioSource = GetComponent<AudioSource>();
         }
 
-        // Falls keine AudioSource existiert, lokal eine anlegen
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
         }
 
-        // WICHTIG: Spielt Sounds auch ab, wenn Time.timeScale = 0 (Pause) ist!
         audioSource.ignoreListenerPause = true;
 
-        // Falls eine Mixer Group zugewiesen wurde, verbinden
         if (sfxMixerGroup != null && audioSource.outputAudioMixerGroup == null)
         {
             audioSource.outputAudioMixerGroup = sfxMixerGroup;
@@ -51,7 +48,6 @@ public class UIButtonSounds : MonoBehaviour, IPointerEnterHandler, IPointerClick
         PlaySound(hoverSound);
     }
 
-    // OnPointerDown reagiert sofort beim Drücken (zuverlässiger bei TimeScale = 0)
     public void OnPointerDown(PointerEventData eventData)
     {
         PlaySound(clickSound);

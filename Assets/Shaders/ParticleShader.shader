@@ -97,7 +97,6 @@ Shader "Custom/ParticleShader"
                 if (alpha <= 0.0)
                     discard;
 
-                // Hue läuft kontinuierlich von 0 -> 1 und beginnt danach wieder von vorne.
                 float hue = _StartHue;
                 float3 rainbowColor = HueToRGB(hue);
 
