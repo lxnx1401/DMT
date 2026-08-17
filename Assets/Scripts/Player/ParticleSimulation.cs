@@ -260,17 +260,17 @@ public class ParticleSimulation : MonoBehaviour
 
     private void DrawParticles()
     {
-        Debug.DrawLine(
-            PlayerPosition + Vector2.left * 1f,
-            PlayerPosition + Vector2.right * 1f,
-            Color.red
-        );
+        // Debug.DrawLine(
+        //     PlayerPosition + Vector2.left * 1f,
+        //     PlayerPosition + Vector2.right * 1f,
+        //     Color.red
+        // );
 
-        Debug.DrawLine(
-            PlayerPosition + Vector2.down * 1f,
-            PlayerPosition + Vector2.up * 1f,
-            Color.red
-        );
+        // Debug.DrawLine(
+        //     PlayerPosition + Vector2.down * 1f,
+        //     PlayerPosition + Vector2.up * 1f,
+        //     Color.red
+        // );
         particleMaterial.SetBuffer("particles", particleBuffer);
         Graphics.DrawProcedural(
             particleMaterial,
