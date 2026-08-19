@@ -339,10 +339,14 @@ MonoBehaviour:
   levelCompletedPanel: {fileID: 296596507}
   scoreText: {fileID: 1011258985}
   highscoreText: {fileID: 0}
+  newHighscoreBanner: {fileID: 56719367}
   lostImage: {fileID: 1112622777}
   completedTitle: {fileID: 977840755}
   backToMenuButton: {fileID: 1336662707}
   scoreLabel: {fileID: 528277006}
+  endlessResultPanel: {fileID: 2055000199}
+  endlessScoreText: {fileID: 213498393}
+  endlessNewHighscoreBanner: {fileID: 1893732565}
   animationDuration: 0.6
   restartButton: {fileID: 1191977911}
   nextButton: {fileID: 658883400}
@@ -365,7 +369,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &56719368
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5678,7 +5682,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1893732566
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5798,7 +5802,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2055000200
 Transform:
   m_ObjectHideFlags: 0

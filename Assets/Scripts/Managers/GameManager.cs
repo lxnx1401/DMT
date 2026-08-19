@@ -87,10 +87,22 @@ public class GameManager : MonoBehaviour
 
         IsGameOver = true;
 
-        if (IsEndlessMode)
-            HighscoreManager.TrySubmitEndlessScore(totalCrownsThisRun);
-
         levelCompletedMenu = FindFirstObjectByType<LevelCompletedLerp>();
+
+        if (IsEndlessMode)
+        {
+            bool isNewHighscore = HighscoreManager.TrySubmitEndlessScore(totalCrownsThisRun);
+
+            if (levelCompletedMenu != null)
+                levelCompletedMenu.TriggerEndlessResult(totalCrownsThisRun, isNewHighscore);
+            else
+            {
+                Debug.LogError("Kein LevelCompletedLerp für den Endlos-Ergebnisbildschirm gefunden.", this);
+                Time.timeScale = 0f;
+            }
+
+            return;
+        }
 
         if (levelCompletedMenu != null)
             levelCompletedMenu.TriggerLevelLost();

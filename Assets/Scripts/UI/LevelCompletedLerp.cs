@@ -15,11 +15,17 @@ public class LevelCompletedLerp : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
 
     [SerializeField] private TMP_Text highscoreText;
+    [SerializeField] private GameObject newHighscoreBanner;
 
     [SerializeField] private GameObject lostImage;
     [SerializeField] private GameObject completedTitle;
     [SerializeField] private GameObject backToMenuButton;
     [SerializeField] private GameObject scoreLabel;
+
+    [Header("Endlos Modus Ergebnis")]
+    [SerializeField] private GameObject endlessResultPanel;
+    [SerializeField] private TMP_Text endlessScoreText;
+    [SerializeField] private GameObject endlessNewHighscoreBanner;
 
     [Header("Animationseinstellungen")]
     [SerializeField] private float animationDuration = 0.4f;
@@ -39,6 +45,15 @@ public class LevelCompletedLerp : MonoBehaviour
 
     void Awake()
     {
+        if (newHighscoreBanner != null)
+            newHighscoreBanner.SetActive(false);
+
+        if (endlessResultPanel != null)
+            endlessResultPanel.SetActive(false);
+
+        if (endlessNewHighscoreBanner != null)
+            endlessNewHighscoreBanner.SetActive(false);
+
         if (levelCompletedPanel != null)
         {
             customOpenedPos = levelCompletedPanel.anchoredPosition.x;
@@ -102,7 +117,7 @@ public class LevelCompletedLerp : MonoBehaviour
         if (!hasLost && LevelManager.Instance != null)
         {
             int levelIndex = LevelManager.Instance.currentLevel;
-            HighscoreManager.TrySubmitScore(levelIndex, activeParticles);
+            bool isNewHighscore = HighscoreManager.TrySubmitScore(levelIndex, activeParticles);
             int highscore = HighscoreManager.GetHighscore(levelIndex);
 
             if (highscoreText != null)
@@ -110,10 +125,17 @@ public class LevelCompletedLerp : MonoBehaviour
                 highscoreText.gameObject.SetActive(true);
                 highscoreText.text = "Best: " + highscore.ToString("000");
             }
+
+            if (newHighscoreBanner != null)
+                newHighscoreBanner.SetActive(isNewHighscore);
         }
-        else if (highscoreText != null)
+        else
         {
-            highscoreText.gameObject.SetActive(false);
+            if (highscoreText != null)
+                highscoreText.gameObject.SetActive(false);
+
+            if (newHighscoreBanner != null)
+                newHighscoreBanner.SetActive(false);
         }
 
         if (completedTitle != null)
@@ -149,6 +171,25 @@ public class LevelCompletedLerp : MonoBehaviour
 
         activeAnimation =
             StartCoroutine(AnimateMenu(customOpenedPos));
+
+        Time.timeScale = 0f;
+    }
+
+    public void TriggerEndlessResult(int score, bool isNewHighscore)
+    {
+        if (isLevelCompleted)
+            return;
+
+        isLevelCompleted = true;
+
+        if (endlessScoreText != null)
+            endlessScoreText.text = score.ToString("000");
+
+        if (endlessNewHighscoreBanner != null)
+            endlessNewHighscoreBanner.SetActive(isNewHighscore);
+
+        if (endlessResultPanel != null)
+            endlessResultPanel.SetActive(true);
 
         Time.timeScale = 0f;
     }
