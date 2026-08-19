@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     // die Kachel-Distanz zum Spieler, nicht mehr über einen Kronen-Zähler.
     private int totalCrownsThisRun = 0;
 
+    public int TotalCrownsThisRun => totalCrownsThisRun;
+
     private LevelCompletedLerp levelCompletedMenu;
 
     public bool IsGameOver { get; private set; }
